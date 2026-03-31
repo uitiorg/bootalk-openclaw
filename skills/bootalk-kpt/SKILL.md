@@ -1,6 +1,6 @@
 ---
 name: bootalk_kpt
-description: uitiorg GitHub 활동을 수집하여 주간 KPT 회고를 생성하고 team-discussions에 게시합니다.
+description: 주간 KPT 회고 생성. 이번 주 한 일 정리, 회고 작성, GitHub 활동 수집 후 team-discussions에 게시합니다.
 metadata:
   openclaw:
     requires:

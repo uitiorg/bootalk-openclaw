@@ -1,6 +1,6 @@
 ---
 name: bootalk_properties
-description: 부톡 매물/아파트 데이터를 btalk2.1_backend API로 조회합니다.
+description: 매물 현황, 아파트 시세, 매매가, 전세가, 거래량, 부동산 통계, 지역별 매물 수를 조회합니다.
 metadata:
   openclaw:
     primaryEnv: BOOTALK_API_KEY

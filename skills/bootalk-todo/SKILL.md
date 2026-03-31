@@ -1,6 +1,6 @@
 ---
 name: bootalk_todo
-description: Google Docs TODO 시트에 할일을 추가/조회합니다.
+description: 할일 추가, 업무 등록, 태스크 관리, TODO 조회. Google Docs의 팀 TODO 시트에 읽기/쓰기합니다.
 metadata:
   openclaw:
     requires:

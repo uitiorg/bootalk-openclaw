@@ -1,6 +1,6 @@
 ---
 name: bootalk_members
-description: 부톡 회원 및 중개사 정보를 조회합니다.
+description: 회원 검색, 중개사 조회, 가입자 수, 사용자 정보 조회. btalk2.1_backend API 사용.
 metadata:
   openclaw:
     primaryEnv: BOOTALK_API_KEY

@@ -1,6 +1,6 @@
 ---
 name: bootalk_weekly_report
-description: 경영진용 주간 업무 요약 보고서를 생성합니다.
+description: 주간 보고, 업무 요약, 이번 주 뭐했어, 대표님 보고용 경영진 리포트 생성. 비개발자 언어로 번역.
 metadata:
   openclaw:
     requires:
