@@ -12,6 +12,9 @@ skills/                          # OpenClaw skills (SKILL.md)
 ├── bootalk-deploy/              # 배포 상태 확인
 ├── bootalk-members/             # 회원/중개사 조회
 └── bootalk-weekly-report/       # 주간 보고 생성
+sentry/                          # Sentry triage bot
+├── transforms/sentry.js         # Webhook transform (payload → triage prompt)
+└── SENTRY_RUNBOOK.md            # Triage 정책 (분류/대응/기록)
 docs/                            # 설정 가이드
 config/                          # 설정 템플릿
 ```
@@ -48,3 +51,8 @@ openclaw channels status --probe
 `skills/<name>/SKILL.md` 파일을 추가하면 됩니다. 코드 작성 불필요, 배포 불필요.
 
 작성 가이드: [docs/skill-guide.md](docs/skill-guide.md)
+
+## Sentry Triage Bot
+
+현재 Telegram으로 전달 중인 Sentry triage bot의 설정과 정책이 `sentry/` 디렉토리에 있습니다.
+Slack 마이그레이션 가이드: [docs/sentry-triage-migration.md](docs/sentry-triage-migration.md)
