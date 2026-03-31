@@ -1,0 +1,12 @@
+# Secrets
+openclaw.json
+*.env
+*.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/

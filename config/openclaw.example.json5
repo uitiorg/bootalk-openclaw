@@ -1,0 +1,39 @@
+// OpenClaw 설정 템플릿
+// 이 파일을 ~/.openclaw/openclaw.json 으로 복사한 뒤 토큰 값을 채우세요.
+// 절대 토큰이 포함된 파일을 커밋하지 마세요.
+{
+  channels: {
+    slack: {
+      enabled: true,
+      mode: "socket",
+      appToken: "xapp-YOUR_APP_TOKEN",
+      botToken: "xoxb-YOUR_BOT_TOKEN",
+    },
+  },
+
+  skills: {
+    load: {
+      extraDirs: [
+        // 이 레포를 클론한 경로로 변경
+        "/path/to/bootalk-openclaw/skills",
+      ],
+    },
+    entries: {
+      "bootalk-properties": {
+        enabled: true,
+        env: {
+          BOOTALK_API_URL: "https://api.bootalk.com",
+          BOOTALK_API_KEY: "YOUR_INTERNAL_API_KEY",
+        },
+      },
+      "bootalk-kpt": {
+        enabled: true,
+        // gh CLI 인증이 필요 (gh auth login)
+      },
+      "bootalk-todo": {
+        enabled: true,
+        // gog CLI 인증이 필요 (gog auth)
+      },
+    },
+  },
+}
