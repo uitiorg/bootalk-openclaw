@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WORKS 마이그레이션 현황 — 부톡봇</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --border: #2a2d3a;
+      --accent: #5b8def;
+      --accent-soft: #1e2d4a;
+      --text: #e2e4ea;
+      --text-muted: #7a7f9a;
+      --green: #3ecf8e;
+      --green-soft: #0d2d1f;
+      --yellow: #f5c842;
+      --yellow-soft: #2d2500;
+      --red: #f06f6f;
+      --red-soft: #2d0f0f;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 15px; line-height: 1.7;
+    }
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 32px 0 24px; text-align: center;
+    }
+    header h1 { font-size: 26px; font-weight: 700; }
+    header p  { color: var(--text-muted); margin-top: 6px; font-size: 14px; }
+    .nav { margin-top: 16px; font-size: 13px; }
+    .nav a { color: var(--accent); text-decoration: none; }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── Summary banner ── */
+    .summary {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+      margin: 32px 0;
+    }
+    .stat {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 20px; text-align: center;
+    }
+    .stat.green { border-color: var(--green); background: var(--green-soft); }
+    .stat-num  { font-size: 32px; font-weight: 700; }
+    .stat.green .stat-num { color: var(--green); }
+    .stat-label { color: var(--text-muted); font-size: 13px; margin-top: 4px; }
+
+    /* ── Section ── */
+    .section { margin: 40px 0; }
+    .section h2 {
+      font-size: 17px; font-weight: 600;
+      padding-bottom: 10px; margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── Timeline ── */
+    .timeline { display: flex; flex-direction: column; gap: 0; }
+    .tl-item {
+      display: grid; grid-template-columns: 120px 1fr;
+      gap: 0 20px; position: relative;
+    }
+    .tl-item::before {
+      content: ''; position: absolute;
+      left: 119px; top: 24px; bottom: -1px;
+      width: 1px; background: var(--border);
+    }
+    .tl-item:last-child::before { display: none; }
+    .tl-date {
+      text-align: right; color: var(--text-muted);
+      font-size: 12px; padding-top: 16px; white-space: nowrap;
+    }
+    .tl-body {
+      padding: 12px 0 20px 20px; position: relative;
+    }
+    .tl-body::before {
+      content: ''; position: absolute;
+      left: -5px; top: 20px;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--green); border: 2px solid var(--bg);
+    }
+    .tl-title { font-weight: 600; font-size: 14px; }
+    .tl-desc  { color: var(--text-muted); font-size: 13px; margin-top: 2px; }
+
+    /* ── Table ── */
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    th {
+      text-align: left; padding: 10px 12px;
+      color: var(--text-muted); font-weight: 500;
+      border-bottom: 1px solid var(--border);
+    }
+    td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--surface); }
+    .badge {
+      display: inline-block; font-size: 11px; font-weight: 600;
+      padding: 2px 8px; border-radius: 4px;
+    }
+    .badge-pass { background: var(--green-soft); color: var(--green); }
+    .badge-note { background: var(--yellow-soft); color: var(--yellow); }
+
+    code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 12px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: 1px 6px; color: var(--accent);
+    }
+
+    .verify-box {
+      background: var(--green-soft); border: 1px solid var(--green);
+      border-radius: 10px; padding: 16px 20px; font-size: 13.5px;
+      margin-bottom: 20px;
+    }
+    .verify-box strong { color: var(--green); }
+
+    footer {
+      border-top: 1px solid var(--border);
+      text-align: center; padding: 32px;
+      color: var(--text-muted); font-size: 13px; margin-top: 40px;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>WORKS → Slack 마이그레이션 현황</h1>
+    <p>네이버 WORKS 게시판 콘텐츠의 Slack 캔버스 이전 결과</p>
+    <div class="nav"><a href="index.html">← 부톡봇 사용 가이드</a></div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ── 요약 수치 ── -->
+  <div class="summary">
+    <div class="stat green">
+      <div class="stat-num">57 / 57</div>
+      <div class="stat-label">WORKS 포스트 이전 완료</div>
+    </div>
+    <div class="stat green">
+      <div class="stat-num">23 / 23</div>
+      <div class="stat-label">Slack 캔버스 검증 통과</div>
+    </div>
+    <div class="stat green">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">마이그레이션 완료 (2026-04-01)</div>
+    </div>
+  </div>
+
+  <!-- ── 진행 이력 ── -->
+  <div class="section">
+    <h2>📋 진행 이력</h2>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-date">2026-03-31</div>
+        <div class="tl-body">
+          <div class="tl-title">WORKS 게시판 전수 조회 및 Slack 채널 배포</div>
+          <div class="tl-desc">10개 WORKS 게시판 → 대응 Slack 채널에 핀 메시지 형태로 57개 포스트 이전. Chrome 자동화로 본문·첨부파일·링크 추출.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">2026-04-01</div>
+        <div class="tl-body">
+          <div class="tl-title">Slack Canvas API 활용 — 핵심 참조 캔버스 10개 생성</div>
+          <div class="tl-desc">files.info → url_private_download 방식으로 캔버스 읽기 구현 확인. 채널별 고정 참조 문서를 캔버스 포맷으로 정비.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">2026-04-01</div>
+        <div class="tl-body">
+          <div class="tl-title">[아카이브] 개별 포스트 → 캔버스 13개 추가 생성</div>
+          <div class="tl-desc">채널 내 [아카이브] 태그 메시지 13건을 각각 독립 캔버스로 변환. 통합 메시지 내 누락 콘텐츠(구글 애즈, 어드민 참조 자료 등) 확인 후 반영.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">2026-04-01</div>
+        <div class="tl-body">
+          <div class="tl-title">프로그래매틱 검증 완료 — PASS 23/23</div>
+          <div class="tl-desc">verify-canvas-migration.py 작성 및 실행. 캔버스 존재·내용·채널 일치 3단계 검증 모두 통과. 고아 핀 메시지 0건.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 채널 매핑 ── -->
+  <div class="section">
+    <h2>🗂️ WORKS 게시판 → Slack 채널 매핑</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>WORKS 게시판</th>
+          <th>Slack 채널</th>
+          <th>채널 ID</th>
+          <th>상태</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>회사 내규/이념</td><td>#회사내규</td><td><code>C0AQSN880NL</code></td><td><span class="badge badge-pass">✅ 완료</span></td></tr>
+        <tr><td>업무 규칙</td><td>#업무규칙</td><td><code>C0AQSN8AEGY</code></td><td><span class="badge badge-pass">✅ 완료</span></td></tr>
+        <tr><td>공지사항</td><td>#공지사항</td><td><code>C0APYE86NAW</code></td><td><span class="badge badge-pass">✅ 완료</span></td></tr>
+        <tr><td>신규 입사자 OT</td><td>#부톡-온보딩</td><td><code>C0APW641YA2</code></td><td><span class="badge badge-pass">✅ 완료</span></td></tr>
+        <tr><td>DEV / DATA</td><td>#dev</td><td><code>C0APYE7MLEN</code></td><td><span class="badge badge-pass">✅ 완료</span></td></tr>
+        <tr><td>BROKERAGE</td><td>#brokerage</td><td><code>C0AQ226BMSQ</code></td><td><span class="badge badge-pass">✅ 완료</span></td></tr>
+        <tr><td>MARKETING / SALES</td><td>#marketing</td><td><code>C0APV20P03X</code></td><td><span class="badge badge-pass">✅ 완료</span></td></tr>
+        <tr><td>ADMIN</td><td>#admin (비공개)</td><td><code>C0AQSN4B680</code></td><td><span class="badge badge-pass">✅ 완료</span></td></tr>
+        <tr><td>CUSTOMER SERVICE</td><td>#cs</td><td>—</td><td><span class="badge badge-note">포스트 없음</span></td></tr>
+        <tr><td>DESIGN</td><td>#design</td><td><code>C0APT0W6B43</code></td><td><span class="badge badge-pass">✅ 완료</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── 캔버스 검증 ── -->
+  <div class="section">
+    <h2>🔍 캔버스 검증 결과 (23개)</h2>
+
+    <div class="verify-box">
+      <strong>최종 검증 결과: PASS 23 / WARN 0 / FAIL 0</strong><br>
+      고아 핀 메시지 0개 · 채널 불일치 0개 · 검증 도구: <code>scripts/verify-canvas-migration.py</code>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>채널</th><th>캔버스 ID</th><th>제목 키워드</th><th>구분</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>#부톡-온보딩</td><td><code>F0APZ1GRWMR</code></td><td>온보딩 가이드</td><td><span class="badge badge-pass">핵심 참조</span></td></tr>
+        <tr><td>#공지사항</td><td><code>F0AQZM486L8</code></td><td>공지사항 필수 정보</td><td><span class="badge badge-pass">핵심 참조</span></td></tr>
+        <tr><td>#업무규칙</td><td><code>F0AQJA5C0SD</code></td><td>업무 규칙</td><td><span class="badge badge-pass">핵심 참조</span></td></tr>
+        <tr><td>#brokerage</td><td><code>F0AQ91JMF2Q</code></td><td>중개사 운영 가이드</td><td><span class="badge badge-pass">핵심 참조</span></td></tr>
+        <tr><td>#dev</td><td><code>F0APQ0CF81M</code></td><td>개발팀 핵심 참조</td><td><span class="badge badge-pass">핵심 참조</span></td></tr>
+        <tr><td>#dev</td><td><code>F0AQZMPL5TJ</code></td><td>앱 테스트</td><td><span class="badge badge-pass">핵심 참조</span></td></tr>
+        <tr><td>#회사내규</td><td><code>F0AQZMF3VJ4</code></td><td>핵심 가치</td><td><span class="badge badge-pass">핵심 참조</span></td></tr>
+        <tr><td>#marketing</td><td><code>F0AR0A45X8Q</code></td><td>단지 링크 공유</td><td><span class="badge badge-pass">핵심 참조</span></td></tr>
+        <tr><td>#dev</td><td><code>F0AR0A3PBPA</code></td><td>JIRA</td><td><span class="badge badge-pass">핵심 참조</span></td></tr>
+        <tr><td>#admin</td><td><code>F0AQ9KJ64CU</code></td><td>중임 신청</td><td><span class="badge badge-pass">핵심 참조</span></td></tr>
+        <tr><td>#공지사항</td><td><code>F0AQKBL08HF</code></td><td>네이버</td><td><span class="badge badge-note">아카이브</span></td></tr>
+        <tr><td>#업무규칙</td><td><code>F0AQ03EUW83</code></td><td>할 일</td><td><span class="badge badge-note">아카이브</span></td></tr>
+        <tr><td>#brokerage</td><td><code>F0AQKBR6R7T</code></td><td>중개수수료</td><td><span class="badge badge-note">아카이브</span></td></tr>
+        <tr><td>#brokerage</td><td><code>F0AQA3GLZU4</code></td><td>중개사 계정 등록</td><td><span class="badge badge-note">아카이브</span></td></tr>
+        <tr><td>#dev</td><td><code>F0AQ33A5YKX</code></td><td>매물 추이</td><td><span class="badge badge-note">아카이브</span></td></tr>
+        <tr><td>#dev</td><td><code>F0AQA3GTM0C</code></td><td>직거래</td><td><span class="badge badge-note">아카이브</span></td></tr>
+        <tr><td>#dev</td><td><code>F0AQ33D97N1</code></td><td>아파트 추가</td><td><span class="badge badge-note">아카이브</span></td></tr>
+        <tr><td>#dev</td><td><code>F0APR26FUB1</code></td><td>TTA</td><td><span class="badge badge-note">아카이브</span></td></tr>
+        <tr><td>#marketing</td><td><code>F0AQ33EGA2H</code></td><td>네이버 성과형</td><td><span class="badge badge-note">아카이브</span></td></tr>
+        <tr><td>#marketing</td><td><code>F0AQKCL5RDX</code></td><td>수도권 아파트</td><td><span class="badge badge-note">아카이브</span></td></tr>
+        <tr><td>#marketing</td><td><code>F0AR0PP8NHE</code></td><td>부동산 인접</td><td><span class="badge badge-note">아카이브</span></td></tr>
+        <tr><td>#marketing</td><td><code>F0AQKCN9WE5</code></td><td>마케팅/영업 참조</td><td><span class="badge badge-note">아카이브</span></td></tr>
+        <tr><td>#admin</td><td><code>F0AQKCR4SHF</code></td><td>어드민 참조</td><td><span class="badge badge-note">아카이브</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<footer>
+  <div class="container">
+    검증 도구: <a href="https://github.com/uitiorg/bootalk-openclaw/blob/main/scripts/verify-canvas-migration.py">verify-canvas-migration.py</a>
+    &nbsp;·&nbsp;
+    <a href="index.html">← 부톡봇 사용 가이드</a>
+  </div>
+</footer>
+
+</body>
+</html>
