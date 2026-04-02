@@ -5,331 +5,564 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>부톡봇 사용 가이드</title>
   <style>
+    /* ── Apple Design System ── */
     :root {
-      --bg: #0f1117;
-      --surface: #1a1d27;
-      --border: #2a2d3a;
-      --accent: #5b8def;
-      --accent-soft: #1e2d4a;
-      --text: #e2e4ea;
-      --muted: #7a7f9a;
-      --green: #3ecf8e;
-      --green-soft: #0d2d1f;
-      --yellow: #f5c842;
-      --yellow-soft: #2d2500;
-      --gray-soft: #1e2028;
+      --apple-black:   #000000;
+      --apple-gray:    #f5f5f7;
+      --apple-text:    #1d1d1f;
+      --apple-muted:   rgba(0, 0, 0, 0.56);
+      --apple-blue:    #0071e3;
+      --apple-link:    #0066cc;
+      --apple-link-dark: #2997ff;
+      --apple-white:   #ffffff;
+      --apple-shadow:  rgba(0, 0, 0, 0.12) 0px 4px 24px 0px;
+      --apple-surface: #ffffff;
+      --apple-dark-surface: #1c1c1e;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
     body {
-      background: var(--bg); color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      font-size: 15px; line-height: 1.6;
+      background: var(--apple-gray);
+      color: var(--apple-text);
+      font-family: -apple-system, 'SF Pro Text', BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Header ── */
-    header {
-      border-bottom: 1px solid var(--border);
-      padding: 36px 0 28px; text-align: center;
+    /* ── Nav ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 52px;
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .header-inner { max-width: 960px; margin: 0 auto; padding: 0 20px; }
-    header h1 { font-size: 26px; font-weight: 700; }
-    header p  { color: var(--muted); margin-top: 6px; font-size: 14px; }
-    .bot-badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 20px; padding: 6px 16px; margin-top: 14px;
-      font-size: 13px; color: var(--muted);
+    .nav-inner {
+      max-width: 980px;
+      width: 100%;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
-
-    /* ── Page layout ── */
-    .page { max-width: 960px; margin: 0 auto; padding: 0 20px 60px; }
-
-    /* ── How-to bar ── */
-    .howto {
-      background: var(--accent-soft); border: 1px solid var(--accent);
-      border-radius: 10px; padding: 14px 20px; margin: 28px 0;
-      font-size: 13.5px; display: flex; align-items: center;
-      justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    .nav-brand {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--apple-white);
+      letter-spacing: -0.374px;
+      text-decoration: none;
     }
-    .howto a { color: var(--accent); text-decoration: none; white-space: nowrap; }
+    .nav-link {
+      font-size: 12px;
+      color: rgba(255,255,255,0.72);
+      text-decoration: none;
+      letter-spacing: 0;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--apple-white); }
 
-    /* ── Section heading ── */
+    /* ── Hero ── */
+    .hero {
+      background: var(--apple-black);
+      padding: 80px 20px 88px;
+      text-align: center;
+    }
+    .hero-inner { max-width: 980px; margin: 0 auto; }
+    .hero-eyebrow {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--apple-link-dark);
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .hero h1 {
+      font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 56px;
+      font-weight: 600;
+      line-height: 1.07;
+      letter-spacing: -0.28px;
+      color: var(--apple-white);
+      margin-bottom: 16px;
+    }
+    .hero-sub {
+      font-size: 21px;
+      font-weight: 400;
+      line-height: 1.19;
+      letter-spacing: 0.231px;
+      color: rgba(255,255,255,0.72);
+      margin-bottom: 32px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 980px;
+      padding: 8px 20px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.72);
+      letter-spacing: -0.224px;
+    }
+    .live-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #34c759;
+      flex-shrink: 0;
+    }
+
+    /* ── Section ── */
+    section {
+      padding: 64px 20px;
+    }
+    section:nth-of-type(odd) { background: var(--apple-gray); }
+    section:nth-of-type(even) { background: var(--apple-white); }
+
+    .section-inner { max-width: 980px; margin: 0 auto; }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: var(--apple-muted);
+      margin-bottom: 8px;
+    }
     .section-heading {
-      display: flex; align-items: center; gap: 10px;
-      margin: 36px 0 14px;
-      font-size: 13px; font-weight: 600; text-transform: uppercase;
-      letter-spacing: 0.8px; color: var(--muted);
+      font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 40px;
+      font-weight: 600;
+      line-height: 1.10;
+      letter-spacing: -0.4px;
+      color: var(--apple-text);
+      margin-bottom: 8px;
     }
-    .section-heading::after {
-      content: ''; flex: 1; height: 1px; background: var(--border);
+    .section-desc {
+      font-size: 17px;
+      color: var(--apple-muted);
+      margin-bottom: 36px;
+      letter-spacing: -0.374px;
     }
 
     /* ── Grid ── */
     .grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
+      gap: 16px;
     }
-    @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
-    @media (min-width: 721px) and (max-width: 960px) {
+    @media (max-width: 740px) { .grid { grid-template-columns: 1fr; } }
+    @media (min-width: 741px) and (max-width: 960px) {
       .grid { grid-template-columns: repeat(2, 1fr); }
     }
 
     /* ── Card ── */
     .card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 10px; padding: 18px 18px 16px;
-      display: flex; flex-direction: column; gap: 10px;
+      background: var(--apple-surface);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: var(--apple-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: box-shadow 0.25s;
+    }
+    section:nth-of-type(even) .card {
+      background: var(--apple-gray);
+      box-shadow: none;
+    }
+    .card:hover {
+      box-shadow: rgba(0, 0, 0, 0.18) 0px 8px 32px 0px;
+    }
+    section:nth-of-type(even) .card:hover {
+      box-shadow: rgba(0, 0, 0, 0.10) 0px 4px 16px 0px;
     }
     .card.stub {
-      opacity: 0.55; border-style: dashed;
+      opacity: 0.52;
     }
-    .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
-    .card-icon { font-size: 22px; line-height: 1; }
-    .card-title { font-weight: 600; font-size: 14px; flex: 1; }
+    .card.stub:hover { box-shadow: var(--apple-shadow); }
 
-    /* ── Status badge ── */
-    .status {
-      font-size: 11px; font-weight: 600; padding: 2px 8px;
-      border-radius: 4px; white-space: nowrap; flex-shrink: 0;
+    .card-icon {
+      font-size: 32px;
+      line-height: 1;
+      margin-bottom: 4px;
     }
-    .status-done   { background: var(--green-soft);  color: var(--green);  }
-    .status-wip    { background: var(--yellow-soft); color: var(--yellow); }
-    .status-stub   { background: var(--gray-soft);   color: var(--muted);  border: 1px solid var(--border); }
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .card-title {
+      font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 21px;
+      font-weight: 600;
+      line-height: 1.19;
+      letter-spacing: 0.231px;
+      color: var(--apple-text);
+    }
+
+    /* ── Status badges ── */
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      padding: 3px 10px;
+      border-radius: 980px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .badge-done   { background: rgba(52, 199, 89, 0.14);  color: #1a7f37; }
+    .badge-wip    { background: rgba(255, 159, 10, 0.14); color: #bf6900; }
+    .badge-stub   { background: rgba(0, 0, 0, 0.06);      color: var(--apple-muted); }
 
     /* ── Examples ── */
-    .examples { display: flex; flex-direction: column; gap: 5px; }
+    .examples { display: flex; flex-direction: column; gap: 6px; }
     .ex {
-      background: var(--bg); border: 1px solid var(--border);
-      border-radius: 6px; padding: 6px 10px;
-      font-size: 13px; color: var(--text);
+      background: var(--apple-gray);
+      border-radius: 8px;
+      padding: 8px 12px;
     }
-    .ex-label { color: var(--muted); font-size: 11px; display: block; margin-bottom: 1px; }
+    section:nth-of-type(even) .ex {
+      background: rgba(0, 0, 0, 0.04);
+    }
+    .ex-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--apple-muted);
+      letter-spacing: 0.2px;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .ex-text {
+      font-size: 14px;
+      color: var(--apple-text);
+      letter-spacing: -0.224px;
+    }
 
     .card-note {
-      font-size: 12px; color: var(--muted);
-      border-top: 1px solid var(--border); padding-top: 8px; margin-top: auto;
+      font-size: 12px;
+      color: var(--apple-muted);
+      letter-spacing: -0.12px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(0,0,0,0.06);
+      margin-top: auto;
     }
 
     /* ── Legend ── */
     .legend {
-      display: flex; gap: 16px; flex-wrap: wrap;
-      font-size: 12px; color: var(--muted); margin: 4px 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
     }
-    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--apple-muted);
+    }
 
-    footer {
-      border-top: 1px solid var(--border);
-      text-align: center; padding: 28px;
-      color: var(--muted); font-size: 13px;
+    /* ── Migration link bar ── */
+    .info-bar {
+      background: var(--apple-blue);
+      padding: 12px 20px;
+      text-align: center;
     }
-    footer a { color: var(--accent); text-decoration: none; }
+    .info-bar a {
+      color: var(--apple-white);
+      font-size: 14px;
+      font-weight: 400;
+      text-decoration: none;
+      letter-spacing: -0.224px;
+    }
+    .info-bar a:hover { text-decoration: underline; }
+    .info-bar .chevron { margin-left: 4px; font-size: 12px; }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--apple-black);
+      padding: 40px 20px;
+      text-align: center;
+    }
+    .footer-inner { max-width: 980px; margin: 0 auto; }
+    footer p {
+      font-size: 12px;
+      color: rgba(255,255,255,0.36);
+      letter-spacing: -0.12px;
+      line-height: 1.8;
+    }
+    footer a {
+      color: rgba(255,255,255,0.52);
+      text-decoration: none;
+    }
+    footer a:hover { color: var(--apple-white); }
+
+    /* ── Responsive hero ── */
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 36px; }
+      .hero-sub { font-size: 17px; }
+      .section-heading { font-size: 28px; }
+    }
   </style>
 </head>
 <body>
 
-<header>
-  <div class="header-inner">
-    <h1>🤖 부톡봇 사용 가이드</h1>
-    <p>Slack에서 자연어로 업무를 처리하세요</p>
-    <div class="bot-badge">
-      <span class="dot"></span>
+<!-- Nav -->
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="#">🤖 부톡봇</a>
+    <a class="nav-link" href="works-migration.html">WORKS 마이그레이션 현황</a>
+  </div>
+</nav>
+
+<!-- Info bar -->
+<div class="info-bar">
+  <a href="works-migration.html">
+    WORKS → Slack Canvas 마이그레이션 완료 (23/23) <span class="chevron">›</span>
+  </a>
+</div>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-inner">
+    <p class="hero-eyebrow">uitiorg / bootalk-openclaw</p>
+    <h1>부톡봇 사용 가이드</h1>
+    <p class="hero-sub">Slack에서 자연어로 업무를 처리하세요.<br>정확한 명령어 없이 평소 말하듯 요청하면 알아서 처리합니다.</p>
+    <div class="hero-badge">
+      <span class="live-dot"></span>
       DM 또는 채널에서 @부톡봇 멘션
     </div>
   </div>
-</header>
-
-<div class="page">
-
-  <div class="howto">
-    <span>정확한 명령어 없이 <strong>평소 말하듯</strong> 요청하면 알아서 처리합니다.</span>
-    <a href="works-migration.html">WORKS 마이그레이션 현황 →</a>
-  </div>
-
-  <!-- Legend -->
-  <div class="legend">
-    <div class="legend-item"><span class="status status-done">✅ 완료</span> 검증된 기능</div>
-    <div class="legend-item"><span class="status status-wip">⚠️ 미검증</span> 구현은 있으나 테스트 미완</div>
-    <div class="legend-item"><span class="status status-stub">🚧 준비중</span> 아직 사용 불가</div>
-  </div>
-
-  <!-- ── 캘린더 & 연차 ── -->
-  <div class="section-heading">📅 캘린더 &amp; 연차</div>
-  <div class="grid">
-
-    <div class="card">
-      <div class="card-top">
-        <div>
-          <div class="card-icon">🏖️</div>
-          <div class="card-title" style="margin-top:6px">연차 · 반차 등록</div>
-        </div>
-        <span class="status status-done">✅ 완료</span>
-      </div>
-      <div class="examples">
-        <div class="ex"><span class="ex-label">종일 연차</span>"나 4월 15일 연차야"</div>
-        <div class="ex"><span class="ex-label">오전 반차</span>"4월 20일 오전 반차"</div>
-        <div class="ex"><span class="ex-label">오후 반차</span>"4월 21일 오후 반차"</div>
-        <div class="ex"><span class="ex-label">연속 연차</span>"28~30일 연차"</div>
-        <div class="ex"><span class="ex-label">대리 등록</span>"배지은 4월 10일 연차 등록해줘"</div>
-      </div>
-      <div class="card-note">부톡 연차 캘린더 (팀 전체 공유)</div>
-    </div>
-
-    <div class="card">
-      <div class="card-top">
-        <div>
-          <div class="card-icon">📋</div>
-          <div class="card-title" style="margin-top:6px">연차 현황 조회</div>
-        </div>
-        <span class="status status-done">✅ 완료</span>
-      </div>
-      <div class="examples">
-        <div class="ex"><span class="ex-label">이번 달</span>"이번 달 연차 현황 알려줘"</div>
-        <div class="ex"><span class="ex-label">현황</span>"이번 달 누가 쉬어?"</div>
-      </div>
-      <div class="card-note">부톡 연차 캘린더에서만 조회 (팀 캘린더와 별개)</div>
-    </div>
-
-    <div class="card">
-      <div class="card-top">
-        <div>
-          <div class="card-icon">📅</div>
-          <div class="card-title" style="margin-top:6px">팀 일정 추가 · 조회</div>
-        </div>
-        <span class="status status-done">✅ 완료</span>
-      </div>
-      <div class="examples">
-        <div class="ex"><span class="ex-label">일정 추가</span>"오늘 3시에 스프린트 회의 잡아줘"</div>
-        <div class="ex"><span class="ex-label">조회</span>"이번 주 일정 보여줘"</div>
-        <div class="ex"><span class="ex-label">데드라인</span>"4월 10일 배포일로 등록해줘"</div>
-      </div>
-      <div class="card-note">부톡 팀 캘린더 (회의·이벤트용)</div>
-    </div>
-
-  </div>
-
-  <!-- ── Slack 관리 ── -->
-  <div class="section-heading">💬 Slack 관리</div>
-  <div class="grid">
-
-    <div class="card">
-      <div class="card-top">
-        <div>
-          <div class="card-icon">🖼️</div>
-          <div class="card-title" style="margin-top:6px">채널 캔버스 관리</div>
-        </div>
-        <span class="status status-done">✅ 완료</span>
-      </div>
-      <div class="examples">
-        <div class="ex"><span class="ex-label">생성</span>"#공지사항 캔버스 만들어줘"</div>
-        <div class="ex"><span class="ex-label">수정</span>"업무규칙 캔버스에 내용 추가해줘"</div>
-        <div class="ex"><span class="ex-label">읽기</span>"개발팀 캔버스 내용 보여줘"</div>
-      </div>
-      <div class="card-note">관리자 전용</div>
-    </div>
-
-    <div class="card">
-      <div class="card-top">
-        <div>
-          <div class="card-icon">👥</div>
-          <div class="card-title" style="margin-top:6px">채널 멤버 관리</div>
-        </div>
-        <span class="status status-done">✅ 완료</span>
-      </div>
-      <div class="examples">
-        <div class="ex"><span class="ex-label">초대</span>"#dev 채널에 홍길동 초대해줘"</div>
-        <div class="ex"><span class="ex-label">조회</span>"누가 어느 채널에 있어?"</div>
-      </div>
-      <div class="card-note">관리자 전용</div>
-    </div>
-
-  </div>
-
-  <!-- ── 업무 관리 ── -->
-  <div class="section-heading">✅ 업무 관리</div>
-  <div class="grid">
-
-    <div class="card">
-      <div class="card-top">
-        <div>
-          <div class="card-icon">📝</div>
-          <div class="card-title" style="margin-top:6px">할 일 관리</div>
-        </div>
-        <span class="status status-wip">⚠️ 미검증</span>
-      </div>
-      <div class="examples">
-        <div class="ex"><span class="ex-label">추가</span>"할 일에 랜딩페이지 수정 추가해줘"</div>
-        <div class="ex"><span class="ex-label">조회</span>"내 할 일 목록 보여줘"</div>
-      </div>
-      <div class="card-note">Google Docs 팀 TODO 시트 연동</div>
-    </div>
-
-    <div class="card">
-      <div class="card-top">
-        <div>
-          <div class="card-icon">🔄</div>
-          <div class="card-title" style="margin-top:6px">주간 회고 (KPT)</div>
-        </div>
-        <span class="status status-wip">⚠️ 미검증</span>
-      </div>
-      <div class="examples">
-        <div class="ex"><span class="ex-label">생성</span>"이번 주 KPT 작성해줘"</div>
-      </div>
-      <div class="card-note">GitHub 활동 수집 후 team-discussions 게시</div>
-    </div>
-
-    <div class="card">
-      <div class="card-top">
-        <div>
-          <div class="card-icon">📊</div>
-          <div class="card-title" style="margin-top:6px">주간 보고서</div>
-        </div>
-        <span class="status status-wip">⚠️ 미검증</span>
-      </div>
-      <div class="examples">
-        <div class="ex"><span class="ex-label">생성</span>"이번 주 대표님 보고 자료 만들어줘"</div>
-        <div class="ex"><span class="ex-label">요약</span>"이번 주 뭐했어? 비개발자 언어로"</div>
-      </div>
-      <div class="card-note">GitHub 활동 기반 경영진 리포트</div>
-    </div>
-
-  </div>
-
-  <!-- ── 준비중 ── -->
-  <div class="section-heading">🚧 준비중</div>
-  <div class="grid">
-
-    <div class="card stub">
-      <div class="card-top">
-        <div>
-          <div class="card-icon">🔍</div>
-          <div class="card-title" style="margin-top:6px">회원 · 중개사 조회</div>
-        </div>
-        <span class="status status-stub">🚧 준비중</span>
-      </div>
-      <div class="card-note">BOOTALK_API_KEY 설정 필요</div>
-    </div>
-
-    <div class="card stub">
-      <div class="card-top">
-        <div>
-          <div class="card-icon">🏠</div>
-          <div class="card-title" style="margin-top:6px">매물 · 부동산 통계</div>
-        </div>
-        <span class="status status-stub">🚧 준비중</span>
-      </div>
-      <div class="card-note">BOOTALK_API_KEY 설정 필요</div>
-    </div>
-
-  </div>
-
 </div>
 
+<!-- Section 1: 캘린더 & 연차 -->
+<section>
+  <div class="section-inner">
+    <p class="section-label">캘린더 &amp; 연차</p>
+    <h2 class="section-heading">일정과 휴가를 말로 관리하세요</h2>
+    <p class="section-desc">구글 캘린더와 연동되어 일정 추가·조회·연차 등록을 자연어로 처리합니다.</p>
+
+    <div class="legend">
+      <div class="legend-item"><span class="badge badge-done">완료</span> 검증된 기능</div>
+      <div class="legend-item"><span class="badge badge-wip">미검증</span> 구현은 있으나 테스트 미완</div>
+      <div class="legend-item"><span class="badge badge-stub">준비중</span> 아직 사용 불가</div>
+    </div>
+
+    <div class="grid">
+
+      <div class="card">
+        <div>
+          <div class="card-icon">🏖️</div>
+        </div>
+        <div class="card-top">
+          <div class="card-title">연차 · 반차 등록</div>
+          <span class="badge badge-done">완료</span>
+        </div>
+        <div class="examples">
+          <div class="ex"><span class="ex-label">종일 연차</span><span class="ex-text">"나 4월 15일 연차야"</span></div>
+          <div class="ex"><span class="ex-label">오전 반차</span><span class="ex-text">"4월 20일 오전 반차"</span></div>
+          <div class="ex"><span class="ex-label">오후 반차</span><span class="ex-text">"4월 21일 오후 반차"</span></div>
+          <div class="ex"><span class="ex-label">연속 연차</span><span class="ex-text">"28~30일 연차"</span></div>
+          <div class="ex"><span class="ex-label">대리 등록</span><span class="ex-text">"배지은 4월 10일 연차 등록해줘"</span></div>
+        </div>
+        <div class="card-note">부톡 연차 캘린더 (팀 전체 공유)</div>
+      </div>
+
+      <div class="card">
+        <div>
+          <div class="card-icon">📋</div>
+        </div>
+        <div class="card-top">
+          <div class="card-title">연차 현황 조회</div>
+          <span class="badge badge-done">완료</span>
+        </div>
+        <div class="examples">
+          <div class="ex"><span class="ex-label">이번 달</span><span class="ex-text">"이번 달 연차 현황 알려줘"</span></div>
+          <div class="ex"><span class="ex-label">현황</span><span class="ex-text">"이번 달 누가 쉬어?"</span></div>
+        </div>
+        <div class="card-note">부톡 연차 캘린더에서만 조회 (팀 캘린더와 별개)</div>
+      </div>
+
+      <div class="card">
+        <div>
+          <div class="card-icon">📅</div>
+        </div>
+        <div class="card-top">
+          <div class="card-title">팀 일정 추가 · 조회</div>
+          <span class="badge badge-done">완료</span>
+        </div>
+        <div class="examples">
+          <div class="ex"><span class="ex-label">일정 추가</span><span class="ex-text">"오늘 3시에 스프린트 회의 잡아줘"</span></div>
+          <div class="ex"><span class="ex-label">조회</span><span class="ex-text">"이번 주 일정 보여줘"</span></div>
+          <div class="ex"><span class="ex-label">데드라인</span><span class="ex-text">"4월 10일 배포일로 등록해줘"</span></div>
+        </div>
+        <div class="card-note">부톡 팀 캘린더 (회의·이벤트용)</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Section 2: Slack 관리 -->
+<section>
+  <div class="section-inner">
+    <p class="section-label">Slack 관리</p>
+    <h2 class="section-heading">채널과 캔버스를 손쉽게</h2>
+    <p class="section-desc">채널 캔버스 생성·수정과 멤버 관리를 Slack에서 바로 처리합니다.</p>
+
+    <div class="grid">
+
+      <div class="card">
+        <div>
+          <div class="card-icon">🖼️</div>
+        </div>
+        <div class="card-top">
+          <div class="card-title">채널 캔버스 관리</div>
+          <span class="badge badge-done">완료</span>
+        </div>
+        <div class="examples">
+          <div class="ex"><span class="ex-label">생성</span><span class="ex-text">"#공지사항 캔버스 만들어줘"</span></div>
+          <div class="ex"><span class="ex-label">수정</span><span class="ex-text">"업무규칙 캔버스에 내용 추가해줘"</span></div>
+          <div class="ex"><span class="ex-label">읽기</span><span class="ex-text">"개발팀 캔버스 내용 보여줘"</span></div>
+        </div>
+        <div class="card-note">관리자 전용</div>
+      </div>
+
+      <div class="card">
+        <div>
+          <div class="card-icon">👥</div>
+        </div>
+        <div class="card-top">
+          <div class="card-title">채널 멤버 관리</div>
+          <span class="badge badge-done">완료</span>
+        </div>
+        <div class="examples">
+          <div class="ex"><span class="ex-label">초대</span><span class="ex-text">"#dev 채널에 홍길동 초대해줘"</span></div>
+          <div class="ex"><span class="ex-label">조회</span><span class="ex-text">"누가 어느 채널에 있어?"</span></div>
+        </div>
+        <div class="card-note">관리자 전용</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Section 3: 업무 관리 -->
+<section>
+  <div class="section-inner">
+    <p class="section-label">업무 관리</p>
+    <h2 class="section-heading">할 일과 보고서를 자동화</h2>
+    <p class="section-desc">GitHub 활동 기반으로 KPT, 주간 보고서, 할 일 관리를 처리합니다. 구현은 되어 있지만 충분히 검증되지 않은 기능입니다.</p>
+
+    <div class="grid">
+
+      <div class="card">
+        <div>
+          <div class="card-icon">📝</div>
+        </div>
+        <div class="card-top">
+          <div class="card-title">할 일 관리</div>
+          <span class="badge badge-wip">미검증</span>
+        </div>
+        <div class="examples">
+          <div class="ex"><span class="ex-label">추가</span><span class="ex-text">"할 일에 랜딩페이지 수정 추가해줘"</span></div>
+          <div class="ex"><span class="ex-label">조회</span><span class="ex-text">"내 할 일 목록 보여줘"</span></div>
+        </div>
+        <div class="card-note">Google Docs 팀 TODO 시트 연동</div>
+      </div>
+
+      <div class="card">
+        <div>
+          <div class="card-icon">🔄</div>
+        </div>
+        <div class="card-top">
+          <div class="card-title">주간 회고 (KPT)</div>
+          <span class="badge badge-wip">미검증</span>
+        </div>
+        <div class="examples">
+          <div class="ex"><span class="ex-label">생성</span><span class="ex-text">"이번 주 KPT 작성해줘"</span></div>
+        </div>
+        <div class="card-note">GitHub 활동 수집 후 team-discussions 게시</div>
+      </div>
+
+      <div class="card">
+        <div>
+          <div class="card-icon">📊</div>
+        </div>
+        <div class="card-top">
+          <div class="card-title">주간 보고서</div>
+          <span class="badge badge-wip">미검증</span>
+        </div>
+        <div class="examples">
+          <div class="ex"><span class="ex-label">생성</span><span class="ex-text">"이번 주 대표님 보고 자료 만들어줘"</span></div>
+          <div class="ex"><span class="ex-label">요약</span><span class="ex-text">"이번 주 뭐했어? 비개발자 언어로"</span></div>
+        </div>
+        <div class="card-note">GitHub 활동 기반 경영진 리포트</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Section 4: 준비중 -->
+<section>
+  <div class="section-inner">
+    <p class="section-label">준비중</p>
+    <h2 class="section-heading">곧 추가될 기능</h2>
+    <p class="section-desc">현재 개발 계획 중인 기능입니다. API 키 설정 이후 순차적으로 지원할 예정입니다.</p>
+
+    <div class="grid">
+
+      <div class="card stub">
+        <div>
+          <div class="card-icon">🔍</div>
+        </div>
+        <div class="card-top">
+          <div class="card-title">회원 · 중개사 조회</div>
+          <span class="badge badge-stub">준비중</span>
+        </div>
+        <div class="card-note">BOOTALK_API_KEY 설정 필요</div>
+      </div>
+
+      <div class="card stub">
+        <div>
+          <div class="card-icon">🏠</div>
+        </div>
+        <div class="card-top">
+          <div class="card-title">매물 · 부동산 통계</div>
+          <span class="badge badge-stub">준비중</span>
+        </div>
+        <div class="card-note">BOOTALK_API_KEY 설정 필요</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
 <footer>
-  <a href="https://github.com/uitiorg/bootalk-openclaw">uitiorg/bootalk-openclaw</a>
-  &nbsp;·&nbsp;
-  <a href="works-migration.html">WORKS 마이그레이션 현황</a>
+  <div class="footer-inner">
+    <p>
+      <a href="https://github.com/uitiorg/bootalk-openclaw">uitiorg/bootalk-openclaw</a>
+      &nbsp;·&nbsp;
+      <a href="works-migration.html">WORKS 마이그레이션 현황</a>
+    </p>
+    <p style="margin-top:8px;">Copyright © 2026 Bootalk. All rights reserved.</p>
+  </div>
 </footer>
 
 </body>
