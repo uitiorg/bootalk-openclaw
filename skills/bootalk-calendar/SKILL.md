@@ -100,12 +100,17 @@ python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leaves
 | "이번 달 휴가 정리해줘" | `leaves` |
 
 ### 이름 매핑 (Slack 발신자 → 실명)
-- 주우철 (cdo.bootalk) → "주우철"
-- 이훈구 (ceo.uiti) → "이훈구"
-- 이현석 (leehs.uiti) → "이현석"
-- 배지은 (bje.uiti) → "배지은"
-- 정정일 (jji.bootalk) → "정정일"
-- 전유진 (cyj.uiti) → "전유진"
+
+> 전체 팀원 ID 및 채널 목록: `/Users/juucheol/Bootalk/bootalk-openclaw/team/channels.md`
+
+| Slack 계정 | 실명 | Slack ID |
+|------------|------|----------|
+| cdo.bootalk | 주우철 | U0APRS4J70B |
+| ceo.uiti | 이훈구 | U0AQ1RUPF4L |
+| leehs.uiti | 이현석 | U0AQ1RWGKPW |
+| bje.uiti | 배지은 | U0APW6HMNR4 |
+| jji.bootalk | 정정일 | U0APRSH0SNP |
+| cyj.uiti | 전유진 | U0APGQN76CF |
 
 날짜 미지정 시 반드시 확인 후 등록.
 제3자 연차 등록 시("배지은 연차 등록해줘") 이름을 그대로 사용.
