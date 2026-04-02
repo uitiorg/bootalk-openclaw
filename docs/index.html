@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>부톡봇 사용 가이드</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --border: #2a2d3a;
+      --accent: #5b8def;
+      --accent-soft: #1e2d4a;
+      --text: #e2e4ea;
+      --text-muted: #7a7f9a;
+      --green: #3ecf8e;
+      --green-soft: #0d2d1f;
+      --yellow: #f5c842;
+      --yellow-soft: #2d2500;
+      --purple: #b07cf8;
+      --purple-soft: #1f1030;
+      --red: #f06f6f;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    /* ── Header ── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 32px 0 24px;
+      text-align: center;
+    }
+    header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+    header p  { color: var(--text-muted); margin-top: 6px; font-size: 14px; }
+    .bot-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; padding: 6px 16px; margin-top: 14px;
+      font-size: 13px; color: var(--text-muted);
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+
+    /* ── Layout ── */
+    .container { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── How to use ── */
+    .how {
+      background: var(--accent-soft); border: 1px solid var(--accent);
+      border-radius: 10px; padding: 18px 22px; margin: 32px 0;
+      font-size: 14px;
+    }
+    .how strong { color: var(--accent); }
+
+    /* ── Category ── */
+    .category { margin: 40px 0; }
+    .category-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .category-icon { font-size: 20px; }
+    .category-title { font-size: 18px; font-weight: 600; }
+
+    /* ── Skill card ── */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 20px 22px; margin-bottom: 12px;
+    }
+    .card-title {
+      font-weight: 600; font-size: 15px; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .tag {
+      font-size: 11px; font-weight: 500; padding: 2px 8px;
+      border-radius: 4px; letter-spacing: 0.3px;
+    }
+    .tag-green  { background: var(--green-soft);  color: var(--green); }
+    .tag-yellow { background: var(--yellow-soft); color: var(--yellow); }
+    .tag-purple { background: var(--purple-soft); color: var(--purple); }
+    .tag-blue   { background: var(--accent-soft); color: var(--accent); }
+
+    .examples { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+    .ex {
+      display: flex; align-items: baseline; gap: 10px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 6px; padding: 8px 12px; font-size: 13.5px;
+    }
+    .ex-label { color: var(--text-muted); font-size: 12px; white-space: nowrap; }
+    .ex-text  { color: var(--text); }
+
+    .card-note {
+      margin-top: 12px; font-size: 13px; color: var(--text-muted);
+      background: var(--bg); border-left: 3px solid var(--border);
+      padding: 8px 12px; border-radius: 0 6px 6px 0;
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      text-align: center; padding: 32px;
+      color: var(--text-muted); font-size: 13px;
+      margin-top: 40px;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>🤖 부톡봇 사용 가이드</h1>
+    <p>Slack에서 부톡봇에게 말을 걸어 업무를 처리하세요</p>
+    <div class="bot-badge">
+      <span class="dot"></span>
+      부톡봇 · Slack DM 또는 채널 멘션으로 사용
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="how">
+    <strong>사용 방법</strong> — 부톡봇에게 DM을 보내거나, 채널에서 <strong>@부톡봇</strong>을 멘션한 후 자연어로 요청하면 됩니다.<br>
+    정확한 명령어를 외울 필요 없이 평소 말하듯 요청하면 알아서 처리합니다.
+  </div>
+
+  <!-- ── 캘린더 ── -->
+  <div class="category">
+    <div class="category-header">
+      <span class="category-icon">📅</span>
+      <span class="category-title">캘린더 & 연차</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        연차 · 반차 등록
+        <span class="tag tag-green">부톡 연차 캘린더</span>
+      </div>
+      <div class="examples">
+        <div class="ex"><span class="ex-label">종일 연차</span><span class="ex-text">"나 4월 15일 연차야"</span></div>
+        <div class="ex"><span class="ex-label">오전 반차</span><span class="ex-text">"4월 20일 오전 반차"</span></div>
+        <div class="ex"><span class="ex-label">오후 반차</span><span class="ex-text">"4월 21일 오후 반차"</span></div>
+        <div class="ex"><span class="ex-label">연속 연차</span><span class="ex-text">"4월 28일부터 30일까지 연차"</span></div>
+        <div class="ex"><span class="ex-label">대리 등록</span><span class="ex-text">"배지은 4월 10일 연차 등록해줘"</span></div>
+      </div>
+      <div class="card-note">등록된 연차는 팀원 전체가 볼 수 있는 공유 캘린더에 기록됩니다.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        연차 현황 조회
+        <span class="tag tag-green">부톡 연차 캘린더</span>
+      </div>
+      <div class="examples">
+        <div class="ex"><span class="ex-label">이번 달</span><span class="ex-text">"이번 달 연차 현황 알려줘"</span></div>
+        <div class="ex"><span class="ex-label">현황</span><span class="ex-text">"이번 달 누가 쉬어?"</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        팀 일정 추가 · 조회
+        <span class="tag tag-blue">부톡 팀 캘린더</span>
+      </div>
+      <div class="examples">
+        <div class="ex"><span class="ex-label">일정 추가</span><span class="ex-text">"오늘 3시에 스프린트 회의 잡아줘"</span></div>
+        <div class="ex"><span class="ex-label">일정 조회</span><span class="ex-text">"이번 주 일정 보여줘"</span></div>
+        <div class="ex"><span class="ex-label">데드라인</span><span class="ex-text">"4월 10일 v3.5 배포일로 등록해줘"</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 업무 관리 ── -->
+  <div class="category">
+    <div class="category-header">
+      <span class="category-icon">✅</span>
+      <span class="category-title">업무 관리</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        할 일 관리
+        <span class="tag tag-yellow">Google Docs TODO</span>
+      </div>
+      <div class="examples">
+        <div class="ex"><span class="ex-label">추가</span><span class="ex-text">"할 일에 랜딩페이지 수정 추가해줘"</span></div>
+        <div class="ex"><span class="ex-label">조회</span><span class="ex-text">"내 할 일 목록 보여줘"</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        주간 회고 (KPT)
+        <span class="tag tag-yellow">team-discussions</span>
+      </div>
+      <div class="examples">
+        <div class="ex"><span class="ex-label">생성</span><span class="ex-text">"이번 주 KPT 작성해줘"</span></div>
+        <div class="ex"><span class="ex-label">게시</span><span class="ex-text">GitHub 활동 수집 후 자동 게시</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        주간 보고서
+        <span class="tag tag-yellow">경영진 리포트</span>
+      </div>
+      <div class="examples">
+        <div class="ex"><span class="ex-label">생성</span><span class="ex-text">"이번 주 대표님 보고 자료 만들어줘"</span></div>
+        <div class="ex"><span class="ex-label">요약</span><span class="ex-text">"이번 주 뭐했어? 비개발자 언어로"</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 개발/배포 ── -->
+  <div class="category">
+    <div class="category-header">
+      <span class="category-icon">🚀</span>
+      <span class="category-title">개발 · 배포</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        배포 현황
+        <span class="tag tag-purple">Vercel</span>
+      </div>
+      <div class="examples">
+        <div class="ex"><span class="ex-label">상태</span><span class="ex-text">"배포 상태 어때?"</span></div>
+        <div class="ex"><span class="ex-label">최근</span><span class="ex-text">"최근 배포 보여줘"</span></div>
+        <div class="ex"><span class="ex-label">롤백</span><span class="ex-text">"롤백 해줘"</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 데이터 조회 ── -->
+  <div class="category">
+    <div class="category-header">
+      <span class="category-icon">🔍</span>
+      <span class="category-title">데이터 조회</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        회원 · 중개사 조회
+        <span class="tag tag-blue">btalk 백엔드</span>
+      </div>
+      <div class="examples">
+        <div class="ex"><span class="ex-label">회원</span><span class="ex-text">"010-0000-0000 회원 정보 찾아줘"</span></div>
+        <div class="ex"><span class="ex-label">중개사</span><span class="ex-text">"강남구 중개사 목록 보여줘"</span></div>
+        <div class="ex"><span class="ex-label">통계</span><span class="ex-text">"오늘 신규 가입자 몇 명이야?"</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        매물 · 부동산 통계
+        <span class="tag tag-blue">btalk 백엔드</span>
+      </div>
+      <div class="examples">
+        <div class="ex"><span class="ex-label">시세</span><span class="ex-text">"서초 래미안 시세 알려줘"</span></div>
+        <div class="ex"><span class="ex-label">매물</span><span class="ex-text">"강남구 아파트 매물 현황"</span></div>
+        <div class="ex"><span class="ex-label">통계</span><span class="ex-text">"이번 달 거래량 어때?"</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Slack 관리 ── -->
+  <div class="category">
+    <div class="category-header">
+      <span class="category-icon">💬</span>
+      <span class="category-title">Slack 관리 (관리자)</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        채널 멤버 관리
+        <span class="tag tag-purple">관리자 전용</span>
+      </div>
+      <div class="examples">
+        <div class="ex"><span class="ex-label">초대</span><span class="ex-text">"#dev 채널에 홍길동 초대해줘"</span></div>
+        <div class="ex"><span class="ex-label">조회</span><span class="ex-text">"누가 어느 채널에 있어?"</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        채널 캔버스 관리
+        <span class="tag tag-purple">관리자 전용</span>
+      </div>
+      <div class="examples">
+        <div class="ex"><span class="ex-label">생성</span><span class="ex-text">"#공지사항 채널에 캔버스 만들어줘"</span></div>
+        <div class="ex"><span class="ex-label">수정</span><span class="ex-text">"업무규칙 캔버스에 내용 추가해줘"</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="container">
+    <a href="https://github.com/uitiorg/bootalk-openclaw">uitiorg/bootalk-openclaw</a>
+    &nbsp;·&nbsp; 내용 추가나 수정은 repo에서 PR 또는 봇에게 직접 요청
+  </div>
+</footer>
+
+</body>
+</html>
