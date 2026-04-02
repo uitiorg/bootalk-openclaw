@@ -1,6 +1,6 @@
 ---
 name: bootalk_calendar
-description: 부톡 팀 구글 캘린더 일정 추가/조회. "일정 추가해줘", "캘린더에 올려줘", "오늘 일정 뭐야", "X시에 Y 잡아줘" 등.
+description: 부톡 팀 구글 캘린더 일정 추가/조회 및 연차 등록. "일정 추가해줘", "연차 등록해줘", "반차야", "이번 달 연차 현황", "오늘 일정 뭐야" 등.
 metadata:
   openclaw:
     requires:
@@ -9,15 +9,18 @@ metadata:
 
 # 부톡 팀 캘린더 관리
 
-캘린더: **부톡 팀 캘린더** (Google Calendar 공유 캘린더, 팀원 6명 편집 가능)
+캘린더 구성:
+- **부톡 팀 캘린더** — 회의, 일정, 이벤트
+- **부톡 연차** — 연차/반차 전용 (팀원 전체 편집 가능)
 
-스크립트 위치: `/Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py`
+스크립트: `/Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py`
 
 ## 권한 안내
 
-- `token.json` / `credentials.json`은 `scripts/` 폴더에 로컬 저장 (git 제외)
-- 봇이 실행되는 머신에 이미 존재 → 추가 설정 불필요
-- refresh_token 포함이라 만료 없이 자동 갱신됨
+`token.json` / `credentials.json`이 스크립트와 같은 폴더에 로컬 저장됨 (git 제외).
+봇이 실행되는 머신에 존재하며, refresh_token으로 자동 갱신.
+
+---
 
 ## Commands
 
@@ -25,40 +28,64 @@ metadata:
 
 ```bash
 python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py agenda
-```
-
-향후 N일:
-```bash
 python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py agenda 14
 ```
 
 ### 일정 추가
 
 ```bash
-python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py add "제목" "YYYY-MM-DD HH:MM" [분]
-```
-
-예시:
-```bash
-# 오늘 15시, 1시간
-python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py add "주간 회의" "2026-04-02 15:00" 60
-
-# 종일 이벤트
+python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py add "주간 회의" "2026-04-07 10:00" 60
 python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py add "배포일" "2026-04-10" --allday
 ```
 
+### 연차 등록 (부톡 연차 캘린더)
+
+```bash
+# 연차 (종일)
+python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leave "이름" "YYYY-MM-DD"
+
+# 연속 연차 (N일)
+python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leave "이름" "YYYY-MM-DD" 3
+
+# 오전 반차 (09:00~13:00)
+python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leave "이름" "YYYY-MM-DD" --half-am
+
+# 오후 반차 (13:00~18:00)
+python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leave "이름" "YYYY-MM-DD" --half-pm
+```
+
+### 이번 달 연차 현황
+
+```bash
+python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leaves
+```
+
+---
+
 ## 사용자 요청 해석
 
-- "오늘 3시에 X" → 오늘 날짜 + 15:00, 기본 60분
-- "내일 오전 10시에 Y 30분" → 내일 날짜 + 10:00, 30분
-- "X 잡아줘" / "캘린더에 X 추가해줘" → add 명령
-- "오늘/이번 주 일정" → agenda 명령
+### 연차 관련
+| 요청 | 처리 방식 |
+|------|-----------|
+| "나 X일 연차야" / "X일 연차 등록해줘" | leave 명령, 이름은 Slack 발신자 |
+| "X일 반차야" (시간 불명확) | 오전/오후 확인 후 등록 |
+| "오전 반차" / "오후 반차" | --half-am / --half-pm |
+| "X일부터 Y일까지 연차" | 일수 계산 후 N일 연차 |
+| "이번 달 연차 현황" | leaves 명령 |
 
-날짜를 명시하지 않으면 오늘 날짜로, 시간을 명시하지 않으면 사용자에게 확인 후 추가.
+### 이름 매핑 (Slack 발신자 → 실명)
+- 주우철 (cdo.bootalk) → "주우철"
+- 이훈구 (ceo.uiti) → "이훈구"
+- 이현석 (leehs.uiti) → "이현석"
+- 배지은 (bje.uiti) → "배지은"
+- 정정일 (jji.bootalk) → "정정일"
+- 전유진 (cyj.uiti) → "전유진"
+
+날짜 미지정 시 반드시 확인 후 등록. 이름은 Slack 발신자 기준으로 자동 적용.
 
 ## Response Format
 
 결과를 한국어로:
-- 추가 성공 시: 제목, 시작 시간, 캘린더 링크
-- 조회 시: 날짜별 일정 목록
+- 연차 등록 성공: "✅ [연차] 이름 — YYYY-MM-DD 등록 완료"
+- 현황 조회: 날짜별 목록
 - 오류 시: 원인과 해결 방법
