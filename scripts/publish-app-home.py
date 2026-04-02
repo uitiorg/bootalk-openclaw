@@ -85,26 +85,6 @@ def build_home():
                     },
                 ]
             },
-            {
-                "type": "actions",
-                "elements": [
-                    {
-                        "type": "button",
-                        "text": {"type": "plain_text", "text": "🏖️  나 오늘 연차야", "emoji": True},
-                        "action_id": "quick_leave_today"
-                    },
-                    {
-                        "type": "button",
-                        "text": {"type": "plain_text", "text": "📋  이번 달 연차 현황", "emoji": True},
-                        "action_id": "quick_leaves_month"
-                    },
-                    {
-                        "type": "button",
-                        "text": {"type": "plain_text", "text": "📅  이번 주 일정", "emoji": True},
-                        "action_id": "quick_agenda_week"
-                    },
-                ]
-            },
             {"type": "divider"},
 
             # ── Slack 관리 ───────────────────────────────────────
