@@ -115,6 +115,47 @@ def build_home():
             },
             {"type": "divider"},
 
+            # ── 개발 & 이슈 ─────────────────────────────────────
+            {
+                "type": "rich_text",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {"type": "emoji", "name": "ticket"},
+                            {"type": "text", "text": "  개발 & 이슈 관리", "style": {"bold": True}}
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "section",
+                "fields": [
+                    {
+                        "type": "mrkdwn",
+                        "text": "*이슈 등록*\n`이슈 등록: 매물 상세 로딩 안됨`\n`프로덕션 버그: 지도 마커 안 보임`"
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": "*이슈 조회 · 해결*\n`이슈 목록`\n`이슈 해결: #47`"
+                    },
+                ]
+            },
+            {
+                "type": "section",
+                "fields": [
+                    {
+                        "type": "mrkdwn",
+                        "text": "*GitHub 현황*\n`오픈 PR 보여줘`\n`정정일 최근 작업`"
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": "*배포 상태*\n`Vercel 배포 상태`\n`최근 배포 로그`"
+                    },
+                ]
+            },
+            {"type": "divider"},
+
             # ── 준비중 ───────────────────────────────────────────
             {
                 "type": "rich_text",
