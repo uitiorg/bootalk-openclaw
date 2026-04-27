@@ -192,21 +192,22 @@ def cmd_leave(service, name, date_str, days=1, half_am=False, half_pm=False):
         print("❌ 날짜 형식: YYYY-MM-DD")
         sys.exit(1)
 
+    leave_type = leave_type_label(int(days), half_am, half_pm)
+    label = f"[{leave_type}] {name}"
+
     if half_am:
-        # 오전 반차: 09:00~13:00
-        label = f"[오전 반차] {name}"
-        dt_s = KST.localize(datetime.combine(start_date, datetime.strptime("09:00", "%H:%M").time()))
-        dt_e = KST.localize(datetime.combine(start_date, datetime.strptime("13:00", "%H:%M").time()))
+        # 오전 반차: 09:30~13:30
+        dt_s = KST.localize(datetime.combine(start_date, datetime.strptime("09:30", "%H:%M").time()))
+        dt_e = KST.localize(datetime.combine(start_date, datetime.strptime("13:30", "%H:%M").time()))
         body = {
             "summary": label,
             "start": {"dateTime": dt_s.isoformat(), "timeZone": "Asia/Seoul"},
             "end":   {"dateTime": dt_e.isoformat(), "timeZone": "Asia/Seoul"},
         }
     elif half_pm:
-        # 오후 반차: 13:00~18:00
-        label = f"[오후 반차] {name}"
-        dt_s = KST.localize(datetime.combine(start_date, datetime.strptime("13:00", "%H:%M").time()))
-        dt_e = KST.localize(datetime.combine(start_date, datetime.strptime("18:00", "%H:%M").time()))
+        # 오후 반차: 13:30~18:30
+        dt_s = KST.localize(datetime.combine(start_date, datetime.strptime("13:30", "%H:%M").time()))
+        dt_e = KST.localize(datetime.combine(start_date, datetime.strptime("18:30", "%H:%M").time()))
         body = {
             "summary": label,
             "start": {"dateTime": dt_s.isoformat(), "timeZone": "Asia/Seoul"},
@@ -214,7 +215,6 @@ def cmd_leave(service, name, date_str, days=1, half_am=False, half_pm=False):
         }
     else:
         # 종일 / 연속 연차
-        label = f"[연차] {name}" if days == 1 else f"[연차 {days}일] {name}"
         end_date = start_date + timedelta(days=int(days))
         body = {
             "summary": label,
