@@ -91,5 +91,24 @@ class TestFormatEmailBody(unittest.TestCase):
         self.assertNotIn("~", body)
 
 
+from cal import resolve_reply_to
+
+
+class TestResolveReplyTo(unittest.TestCase):
+    def test_known_name(self):
+        # 매핑이 있으면 본인 이메일 반환
+        self.assertEqual(resolve_reply_to("주우철"), "cdo.bootalk@gmail.com")
+        self.assertEqual(resolve_reply_to("이훈구"), "ceo.uiti@gmail.com")
+        self.assertEqual(resolve_reply_to("이현석"), "leehs.uiti@gmail.com")
+        self.assertEqual(resolve_reply_to("정정일"), "jji.bootalk@gmail.com")
+        self.assertEqual(resolve_reply_to("배지은"), "bje.uiti@gmail.com")
+        self.assertEqual(resolve_reply_to("전유진"), "cyj.uiti@gmail.com")
+
+    def test_unknown_name_returns_none(self):
+        # 매핑에 없으면 None — Reply-To 헤더 자체를 생략하기 위함
+        self.assertIsNone(resolve_reply_to("홍길동"))
+        self.assertIsNone(resolve_reply_to(""))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -66,6 +66,22 @@ def format_email_body(name: str, leave_type: str, start_date: date, days: int, t
     return "\n".join(lines)
 
 
+# 한국어 이름 → 본인 이메일. spec 원칙에 따라 docs에 노출하지 않음.
+TEAM_EMAILS = {
+    "주우철":  "cdo.bootalk@gmail.com",
+    "이훈구":  "ceo.uiti@gmail.com",
+    "이현석":  "leehs.uiti@gmail.com",
+    "정정일":  "jji.bootalk@gmail.com",
+    "배지은":  "bje.uiti@gmail.com",
+    "전유진":  "cyj.uiti@gmail.com",
+}
+
+
+def resolve_reply_to(name: str):
+    """이름이 매핑에 있으면 이메일, 없으면 None (Reply-To 헤더 생략)."""
+    return TEAM_EMAILS.get(name)
+
+
 def get_service():
     from google.auth.transport.requests import Request
     from google.oauth2.credentials import Credentials
