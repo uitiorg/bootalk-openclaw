@@ -139,7 +139,14 @@ python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leaves
 ## Response Format
 
 결과를 한국어로:
-- 등록 성공: "✅ [연차] 이름 — YYYY-MM-DD 등록 완료"
+
+**연차 등록 (leave 명령) 응답** — 반드시 두 줄 이상으로 구성:
+1. 캘린더 등록 결과 라인 — 예: `✅ [연차] 정정일 — 2026-05-14 등록 완료` (캘린더 링크 첨부)
+2. **이메일 발송 결과 라인** — 반드시 포함. 예: `📧 holiday.uiti@gmail.com 알림 완료`
+   - cal.py stdout에 `📧 이메일 발송 완료` 가 있으면 성공으로 간주, 응답에 위 형식으로 명시
+   - cal.py stderr 또는 stdout에 `⚠️ 이메일 발송 실패` 가 있으면 응답에 실패 사실과 사유 명시
+   - 이메일 라인을 절대 생략하지 말 것 — 신청자가 메일 발송 여부를 확인할 수 있어야 함
+
+**기타 응답:**
 - 현황 조회: 날짜별 목록 (leaves 결과 그대로)
 - 오류 시: 원인과 해결 방법
-- 연차 등록 응답: 캘린더 등록 결과 + "📧 holiday.uiti@gmail.com 알림 완료" 한 줄. 이메일 발송 실패 시 그 사실을 명시.
