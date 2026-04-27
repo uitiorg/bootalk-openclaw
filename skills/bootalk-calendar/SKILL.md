@@ -64,12 +64,33 @@ python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leave "이름" "
 # 연속 연차 (N일)
 python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leave "이름" "YYYY-MM-DD" 3
 
-# 오전 반차 (09:00~13:00)
+# 오전 반차 (09:30~13:30)
 python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leave "이름" "YYYY-MM-DD" --half-am
 
-# 오후 반차 (13:00~18:00)
+# 오후 반차 (13:30~18:30)
 python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leave "이름" "YYYY-MM-DD" --half-pm
 ```
+
+### 자동 이메일 알림
+
+연차/반차 등록 시 자동으로 `holiday.uiti@gmail.com`에 알림 메일 1통이 발송된다.
+
+- 발신: `<신청자 이름> <cdo.bootalk@gmail.com>` (display name = 신청자 본인)
+- 제목: `[오전반차] 26.05.01 주우철` 형식
+- 본문: 신청자, 일자, 종류, 신청일시, 신청 경로 5줄
+- Reply-To: 신청자 본인 이메일 (HR이 답장 시 신청자에게 직접 도달)
+
+이메일 발송 실패는 stderr 경고만 출력하고 캘린더 등록은 유지된다 — 사용자에게 발송 실패 안내 후 수동 재시도 가능.
+
+이메일 발송을 끄려면 `--no-email` 플래그 추가 (테스트/디버그 용도):
+
+```bash
+python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leave "이름" "YYYY-MM-DD" --no-email
+```
+
+제3자가 다른 사람의 연차를 등록할 때(예: "정정일 5월 5일 오후 반차 등록해줘")는 발화자가 아니라 **신청 대상자(정정일)** 기준으로 메일 발송.
+
+---
 
 ### 연차 현황 조회 → 반드시 leaves
 
@@ -121,3 +142,4 @@ python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leaves
 - 등록 성공: "✅ [연차] 이름 — YYYY-MM-DD 등록 완료"
 - 현황 조회: 날짜별 목록 (leaves 결과 그대로)
 - 오류 시: 원인과 해결 방법
+- 연차 등록 응답: 캘린더 등록 결과 + "📧 holiday.uiti@gmail.com 알림 완료" 한 줄. 이메일 발송 실패 시 그 사실을 명시.
