@@ -39,5 +39,57 @@ class TestFormatEmailSubject(unittest.TestCase):
         self.assertEqual(result, "[연차 3일] 26.07.01 배지은")
 
 
+from datetime import datetime as _datetime
+from cal import format_email_body, KST
+
+
+class TestFormatEmailBody(unittest.TestCase):
+    def setUp(self):
+        # 신청일시를 결정적으로 만들기 위해 고정값 주입
+        self.now = KST.localize(_datetime(2026, 4, 27, 14, 32))
+
+    def test_half_am(self):
+        body = format_email_body(
+            name="주우철",
+            leave_type="오전반차",
+            start_date=_date(2026, 5, 1),
+            days=1,
+            time_range="09:30–13:30",
+            now=self.now,
+        )
+        self.assertIn("신청자: 주우철", body)
+        self.assertIn("일자: 2026-05-01", body)
+        self.assertIn("종류: 오전반차 (09:30–13:30)", body)
+        self.assertIn("신청일시: 2026-04-27 14:32 KST", body)
+        self.assertIn("신청 경로: 부톡봇 (Slack)", body)
+        self.assertNotIn("CDO", body)  # 직책 표기 금지
+
+    def test_full_day_multi_includes_end_date(self):
+        body = format_email_body(
+            name="정정일",
+            leave_type="연차 3일",
+            start_date=_date(2026, 5, 1),
+            days=3,
+            time_range="종일",
+            now=self.now,
+        )
+        # 다중일은 "일자: 시작 ~ 종료" 형식
+        self.assertIn("2026-05-01", body)
+        self.assertIn("2026-05-03", body)
+        self.assertIn("~", body)
+
+    def test_full_day_single_no_range(self):
+        body = format_email_body(
+            name="이현석",
+            leave_type="연차",
+            start_date=_date(2026, 6, 1),
+            days=1,
+            time_range="종일",
+            now=self.now,
+        )
+        # 1일은 ~ 표기 없음
+        self.assertNotIn("~", body)
+
+
 if __name__ == "__main__":
     unittest.main()

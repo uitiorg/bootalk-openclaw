@@ -44,6 +44,28 @@ def format_email_subject(name: str, leave_type: str, start_date: date) -> str:
     return f"[{leave_type}] {start_date.strftime('%y.%m.%d')} {name}"
 
 
+_WEEKDAY_KR = ["월", "화", "수", "목", "금", "토", "일"]
+
+
+def format_email_body(name: str, leave_type: str, start_date: date, days: int, time_range: str, now) -> str:
+    """이메일 본문 5줄. 직책은 의도적으로 표기하지 않음."""
+    weekday = _WEEKDAY_KR[start_date.weekday()]
+    if days > 1:
+        end_date = start_date + timedelta(days=days - 1)
+        date_line = f"일자: {start_date.isoformat()} ({weekday}) ~ {end_date.isoformat()}"
+    else:
+        date_line = f"일자: {start_date.isoformat()} ({weekday})"
+
+    lines = [
+        f"신청자: {name}",
+        date_line,
+        f"종류: {leave_type} ({time_range})",
+        f"신청일시: {now.strftime('%Y-%m-%d %H:%M KST')}",
+        "신청 경로: 부톡봇 (Slack)",
+    ]
+    return "\n".join(lines)
+
+
 def get_service():
     from google.auth.transport.requests import Request
     from google.oauth2.credentials import Credentials
