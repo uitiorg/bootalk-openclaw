@@ -29,6 +29,10 @@ SCOPES        = [
     "https://www.googleapis.com/auth/gmail.send",
 ]
 
+# Email notification recipient. Currently set to test address; will flip to
+# holiday.uiti@gmail.com after first-pass verification by user.
+RECIPIENT_EMAIL = "jwc@bootalk.co.kr"
+
 
 # ─── 순수 헬퍼 ───────────────────────────────────────────────────────────────
 def leave_type_label(days: int, half_am: bool, half_pm: bool) -> str:
@@ -183,6 +187,46 @@ def cmd_add(service, title, start_str, duration_min=60, allday=False):
     print(f"✅ 이벤트 추가: {title}")
     print(f"   시작: {event['start'].get('dateTime') or event['start'].get('date')}")
     print(f"   링크: {event.get('htmlLink', '')}")
+
+
+# ─── notify_email: HR에 알림 발송 ─────────────────────────────────────────────
+def notify_email(creds, name, leave_type, start_date, days, time_range):
+    """RECIPIENT_EMAIL 로 연차 신청 알림 1통 발송.
+
+    From display name은 신청자 한국어 이름.
+    Reply-To는 매핑된 신청자 본인 이메일 (없으면 헤더 생략).
+    """
+    from email.mime.text import MIMEText
+    from email.utils import formataddr
+    import base64
+    from googleapiclient.discovery import build
+
+    sender_email = "cdo.bootalk@gmail.com"
+
+    subject = format_email_subject(name, leave_type, start_date)
+    body    = format_email_body(
+        name=name,
+        leave_type=leave_type,
+        start_date=start_date,
+        days=days,
+        time_range=time_range,
+        now=datetime.now(KST),
+    )
+
+    msg = MIMEText(body, "plain", "utf-8")
+    msg["To"]      = RECIPIENT_EMAIL
+    msg["From"]    = formataddr((name, sender_email))
+    msg["Subject"] = subject
+
+    reply_to = resolve_reply_to(name)
+    if reply_to:
+        msg["Reply-To"] = reply_to
+    else:
+        print(f"⚠️  매핑에 없는 신청자 — Reply-To 헤더 생략: {name}", file=sys.stderr)
+
+    raw = base64.urlsafe_b64encode(msg.as_bytes()).decode()
+    gmail = build("gmail", "v1", credentials=creds)
+    gmail.users().messages().send(userId="me", body={"raw": raw}).execute()
 
 
 # ─── leave: 연차 등록 ─────────────────────────────────────────────────────────
