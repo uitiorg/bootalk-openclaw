@@ -39,7 +39,7 @@ def leave_type_label(days: int, half_am: bool, half_pm: bool) -> str:
     return f"연차 {days}일"
 
 
-def format_email_subject(name: str, leave_type: str, start_date) -> str:
+def format_email_subject(name: str, leave_type: str, start_date: date) -> str:
     """이메일 제목: [라벨] YY.MM.DD 이름 — 날짜 포함."""
     return f"[{leave_type}] {start_date.strftime('%y.%m.%d')} {name}"
 
