@@ -27,6 +27,18 @@ KST           = pytz.timezone("Asia/Seoul")
 SCOPES        = ["https://www.googleapis.com/auth/calendar"]
 
 
+# ─── 순수 헬퍼 ───────────────────────────────────────────────────────────────
+def leave_type_label(days: int, half_am: bool, half_pm: bool) -> str:
+    """연차 종류 라벨. 캘린더 이벤트 제목과 이메일 제목/본문에서 공유."""
+    if half_am:
+        return "오전반차"
+    if half_pm:
+        return "오후반차"
+    if days == 1:
+        return "연차"
+    return f"연차 {days}일"
+
+
 def get_service():
     from google.auth.transport.requests import Request
     from google.oauth2.credentials import Credentials
