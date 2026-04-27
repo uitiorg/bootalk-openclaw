@@ -11,7 +11,10 @@
   python3 cal.py leave "이름" "2026-04-10" --half-am  # 오전 반차
   python3 cal.py leave "이름" "2026-04-10" --half-pm  # 오후 반차
   python3 cal.py leave "이름" "2026-04-10" 3          # 3일 연차
+  python3 cal.py leave "이름" "2026-04-10" --no-email # 이메일 발송 스킵 (테스트용)
   python3 cal.py leaves              # 이번 달 연차 현황
+
+연차 등록 시 RECIPIENT_EMAIL 로 자동 알림 메일 1통 발송 (--no-email 옵션으로 끄기 가능).
 """
 import sys
 import os
@@ -90,6 +93,7 @@ def resolve_reply_to(name: str):
 
 
 def get_service():
+    """Calendar service와 OAuth credentials를 함께 반환. credentials는 Gmail용도."""
     from google.auth.transport.requests import Request
     from google.oauth2.credentials import Credentials
     from google_auth_oauthlib.flow import InstalledAppFlow
@@ -106,7 +110,7 @@ def get_service():
             creds = flow.run_local_server(port=0)
         with open(TOKEN_FILE, "w") as f:
             f.write(creds.to_json())
-    return build("calendar", "v3", credentials=creds)
+    return build("calendar", "v3", credentials=creds), creds
 
 
 def get_calendar_id(service, name):
@@ -230,7 +234,7 @@ def notify_email(creds, name, leave_type, start_date, days, time_range):
 
 
 # ─── leave: 연차 등록 ─────────────────────────────────────────────────────────
-def cmd_leave(service, name, date_str, days=1, half_am=False, half_pm=False):
+def cmd_leave(service, creds, name, date_str, days=1, half_am=False, half_pm=False, send_email=True):
     cal_id = get_calendar_id(service, LEAVE_CAL)
 
     try:
@@ -275,6 +279,20 @@ def cmd_leave(service, name, date_str, days=1, half_am=False, half_pm=False):
     print(f"   날짜: {date_disp}")
     print(f"   링크: {event.get('htmlLink', '')}")
 
+    # 이메일 알림 발송 (실패는 stderr 경고만, 종료 코드 0 유지)
+    if send_email:
+        try:
+            if half_am:
+                time_range = "09:30–13:30"
+            elif half_pm:
+                time_range = "13:30–18:30"
+            else:
+                time_range = "종일"
+            notify_email(creds, name, leave_type, start_date, int(days), time_range)
+            print(f"📧 이메일 발송 완료: {RECIPIENT_EMAIL}")
+        except Exception as e:
+            print(f"⚠️  이메일 발송 실패 (캘린더는 등록됨): {e}", file=sys.stderr)
+
 
 # ─── leaves: 이번 달 연차 현황 조회 ─────────────────────────────────────────
 def cmd_leaves(service):
@@ -309,7 +327,7 @@ def main():
         sys.exit(0)
 
     cmd = args[0]
-    service = get_service()
+    service, creds = get_service()
 
     if cmd == "agenda":
         days = int(args[1]) if len(args) > 1 else 7
@@ -327,14 +345,16 @@ def main():
 
     elif cmd == "leave":
         if len(args) < 3:
-            print('사용법: cal.py leave "이름" "YYYY-MM-DD" [일수|--half-am|--half-pm]')
+            print('사용법: cal.py leave "이름" "YYYY-MM-DD" [일수|--half-am|--half-pm] [--no-email]')
             sys.exit(1)
-        name     = args[1]
-        date_str = args[2]
-        half_am  = "--half-am" in args
-        half_pm  = "--half-pm" in args
-        days     = int(args[3]) if len(args) > 3 and not args[3].startswith("--") else 1
-        cmd_leave(service, name, date_str, days, half_am, half_pm)
+        name      = args[1]
+        date_str  = args[2]
+        half_am   = "--half-am" in args
+        half_pm   = "--half-pm" in args
+        no_email  = "--no-email" in args
+        days_args = [a for a in args[3:] if not a.startswith("--")]
+        days      = int(days_args[0]) if days_args else 1
+        cmd_leave(service, creds, name, date_str, days, half_am, half_pm, send_email=not no_email)
 
     elif cmd == "leaves":
         cmd_leaves(service)
