@@ -24,7 +24,10 @@ CREDS_FILE    = os.path.join(SCRIPT_DIR, "credentials.json")
 CALENDAR_NAME = "부톡 팀 캘린더"
 LEAVE_CAL     = "부톡 연차"
 KST           = pytz.timezone("Asia/Seoul")
-SCOPES        = ["https://www.googleapis.com/auth/calendar"]
+SCOPES        = [
+    "https://www.googleapis.com/auth/calendar",
+    "https://www.googleapis.com/auth/gmail.send",
+]
 
 
 # ─── 순수 헬퍼 ───────────────────────────────────────────────────────────────
