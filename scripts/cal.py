@@ -36,6 +36,14 @@ SCOPES        = [
 # holiday.uiti@gmail.com after first-pass verification by user.
 RECIPIENT_EMAIL = "jwc@bootalk.co.kr"
 
+# 반차 시간 — 캘린더 이벤트 시각과 이메일 본문 표시에서 공유 (single source of truth)
+HALF_AM_START = "09:30"
+HALF_AM_END   = "13:30"
+HALF_PM_START = "13:30"
+HALF_PM_END   = "18:30"
+HALF_AM_RANGE = f"{HALF_AM_START}–{HALF_AM_END}"
+HALF_PM_RANGE = f"{HALF_PM_START}–{HALF_PM_END}"
+
 
 # ─── 순수 헬퍼 ───────────────────────────────────────────────────────────────
 def leave_type_label(days: int, half_am: bool, half_pm: bool) -> str:
@@ -247,18 +255,16 @@ def cmd_leave(service, creds, name, date_str, days=1, half_am=False, half_pm=Fal
     label = f"[{leave_type}] {name}"
 
     if half_am:
-        # 오전 반차: 09:30~13:30
-        dt_s = KST.localize(datetime.combine(start_date, datetime.strptime("09:30", "%H:%M").time()))
-        dt_e = KST.localize(datetime.combine(start_date, datetime.strptime("13:30", "%H:%M").time()))
+        dt_s = KST.localize(datetime.combine(start_date, datetime.strptime(HALF_AM_START, "%H:%M").time()))
+        dt_e = KST.localize(datetime.combine(start_date, datetime.strptime(HALF_AM_END,   "%H:%M").time()))
         body = {
             "summary": label,
             "start": {"dateTime": dt_s.isoformat(), "timeZone": "Asia/Seoul"},
             "end":   {"dateTime": dt_e.isoformat(), "timeZone": "Asia/Seoul"},
         }
     elif half_pm:
-        # 오후 반차: 13:30~18:30
-        dt_s = KST.localize(datetime.combine(start_date, datetime.strptime("13:30", "%H:%M").time()))
-        dt_e = KST.localize(datetime.combine(start_date, datetime.strptime("18:30", "%H:%M").time()))
+        dt_s = KST.localize(datetime.combine(start_date, datetime.strptime(HALF_PM_START, "%H:%M").time()))
+        dt_e = KST.localize(datetime.combine(start_date, datetime.strptime(HALF_PM_END,   "%H:%M").time()))
         body = {
             "summary": label,
             "start": {"dateTime": dt_s.isoformat(), "timeZone": "Asia/Seoul"},
@@ -283,9 +289,9 @@ def cmd_leave(service, creds, name, date_str, days=1, half_am=False, half_pm=Fal
     if send_email:
         try:
             if half_am:
-                time_range = "09:30–13:30"
+                time_range = HALF_AM_RANGE
             elif half_pm:
-                time_range = "13:30–18:30"
+                time_range = HALF_PM_RANGE
             else:
                 time_range = "종일"
             notify_email(creds, name, leave_type, start_date, int(days), time_range)
