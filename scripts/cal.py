@@ -47,7 +47,7 @@ def format_email_subject(name: str, leave_type: str, start_date: date) -> str:
 _WEEKDAY_KR = ["월", "화", "수", "목", "금", "토", "일"]
 
 
-def format_email_body(name: str, leave_type: str, start_date: date, days: int, time_range: str, now) -> str:
+def format_email_body(name: str, leave_type: str, start_date: date, days: int, time_range: str, now: datetime) -> str:
     """이메일 본문 5줄. 직책은 의도적으로 표기하지 않음."""
     weekday = _WEEKDAY_KR[start_date.weekday()]
     if days > 1:
