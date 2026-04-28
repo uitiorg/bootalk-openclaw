@@ -32,9 +32,8 @@ SCOPES        = [
     "https://www.googleapis.com/auth/gmail.send",
 ]
 
-# Email notification recipient. Currently set to test address; will flip to
-# holiday.uiti@gmail.com after first-pass verification by user.
-RECIPIENT_EMAIL = "jwc@bootalk.co.kr"
+# Email notification recipient — production HR mailbox.
+RECIPIENT_EMAIL = "holiday.uiti@gmail.com"
 
 # 반차 시간 — 캘린더 이벤트 시각과 이메일 본문 표시에서 공유 (single source of truth)
 HALF_AM_START = "09:30"
