@@ -25,7 +25,6 @@ OpenClaw Gateway (local Mac, port 18789)
     ├── Skills (this repo)
     │   ├── 매물 조회     → curl → btalk2.1_backend API
     │   ├── KPT 회고      → gh CLI → GitHub API
-    │   ├── TODO 관리     → gog CLI → Google Docs
     │   ├── 배포 상태     → vercel CLI
     │   ├── 회원 조회     → curl → btalk2.1_backend API
     │   └── 주간 보고     → gh CLI → GitHub API
@@ -138,7 +137,6 @@ Test in Slack: `@Bootalk AI 안녕`
 skills/                          # OpenClaw skills (SKILL.md)
 ├── bootalk-properties/          # 매물 현황, 시세, 거래량 조회
 ├── bootalk-kpt/                 # 주간 KPT 회고 생성
-├── bootalk-todo/                # Google Docs TODO 관리
 ├── bootalk-deploy/              # Vercel 배포 상태/로그/롤백
 ├── bootalk-members/             # 회원/중개사 검색
 └── bootalk-weekly-report/       # 경영진 주간 보고 (비개발자 언어)

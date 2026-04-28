@@ -180,7 +180,7 @@ def build_home():
                                 "type": "rich_text_section",
                                 "elements": [
                                     {"type": "emoji", "name": "warning"},
-                                    {"type": "text", "text": " 할 일 관리 · 주간 KPT · 주간 보고서"},
+                                    {"type": "text", "text": " 주간 KPT · 주간 보고서"},
                                     {"type": "text", "text": "  — 구현 완료, 검증 중", "style": {"italic": True}}
                                 ]
                             },

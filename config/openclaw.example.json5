@@ -30,10 +30,6 @@
         enabled: true,
         // gh CLI 인증이 필요 (gh auth login)
       },
-      "bootalk-todo": {
-        enabled: true,
-        // gog CLI 인증이 필요 (gog auth)
-      },
     },
   },
 }
