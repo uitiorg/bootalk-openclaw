@@ -52,3 +52,4 @@ Slack
 - `docs/` 폴더만 GitHub Pages에 노출됨 — 민감 정보는 `docs/` 외부에 둘 것
 - 봇 토큰/크리덴셜은 절대 커밋하지 말 것 (`.gitignore` 참조)
 - 스킬에서 연차/휴가 조회 시 반드시 `leaves` 명령 사용 (`agenda` 사용 금지)
+- **연차 등록 시 자동 이메일 발송**: 부톡봇이 `cal.py leave …`를 실행하면 캘린더 등록과 동시에 `holiday.uiti@gmail.com`(HR)로 알림 메일이 1통 발송됨. 봇 응답에는 반드시 `📧 holiday.uiti@gmail.com 알림 완료` 라인이 포함되어야 함 (스킬 `Response Format` 참조). 자세한 내용: `docs/leave-email-feature.md`
