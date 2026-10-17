@@ -1,5 +1,7 @@
 # 연차 신청 시 holiday.uiti@gmail.com 이메일 자동 발송 — 설계
 
+> Historical design snapshot. 현재 기능의 재사용 가능한 부분은 `scripts/cal.py`와 `docs/leave-email-feature.md`에 정리되어 있으며, 아래 OpenClaw gateway 흐름은 실행되지 않습니다.
+
 - **작성일:** 2026-04-27
 - **상태:** Draft, 사용자 검토 대기
 - **범위:** `bootalk-calendar` 스킬 + `scripts/cal.py`에 이메일 알림 부가 기능 추가

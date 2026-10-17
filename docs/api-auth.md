@@ -1,25 +1,24 @@
-# btalk2.1_backend 인증 방법
+# btalk2.1_backend 서비스 인증
 
-## 구조
+Bootalk 스크립트나 Codex task가 내부 API를 읽어야 할 때 사용하는 서비스 인증 참고자료입니다. 이 문서는 현재 API가 실제로 배포되어 있다는 증거가 아니며, backend endpoint와 secret 주입이 준비된 환경에서만 적용합니다.
 
-```
-OpenClaw Skill (curl)
+## 요청 흐름
+
+```text
+자동화 또는 직접 실행 스크립트
   │
-  ├─① POST /internal/auth/service-token
-  │    Header: X-Internal-Api-Key: {secret}
-  │    Response: { data: { accessToken: "eyJ..." } }
+  ├─ POST /internal/auth/service-token
+  │    X-Internal-Api-Key: ${BOOTALK_API_KEY}
   │
-  └─② GET /api/any-endpoint
-       Header: Authorization: Bearer {accessToken}
-       → 기존 JwtAuthenticationFilter가 검증
-       → UserRole.SERVICE로 인식
+  └─ GET /api/any-endpoint
+       Authorization: Bearer ${SERVICE_TOKEN}
 ```
 
-## 사전 작업 (백엔드에서 1회)
+서비스 토큰은 짧은 수명의 인증 토큰이어야 하며, 출력·로그·automation memory에 저장하지 않습니다.
 
-`btalk2.1_backend`에 파일 1개 + 설정 1줄 추가 필요:
+## Backend prerequisite
 
-### 1. InternalAuthController.kt
+`btalk2.1_backend`에 아래 endpoint와 설정을 별도로 구현·배포해야 합니다.
 
 ```kotlin
 @RestController
@@ -36,13 +35,11 @@ class InternalAuthController(
         if (apiKey != internalApiKey) {
             throw AuthenticationException("Invalid API key")
         }
-        val token = jwtTokenProvider.createServiceToken("openclaw-bot")
+        val token = jwtTokenProvider.createServiceToken("bootalk-automation")
         return ApiResponse.success(TokenResponse(accessToken = token))
     }
 }
 ```
-
-### 2. application.yml
 
 ```yaml
 btalk:
@@ -50,21 +47,23 @@ btalk:
     api-key: ${INTERNAL_API_KEY}
 ```
 
-## OpenClaw 설정
+배포 전에는 endpoint의 인증 예외 처리, rate limit, audit log, 환경별 key 분리를 backend 소유자가 확인해야 합니다.
 
-`~/.openclaw/openclaw.json`의 skills entries에 환경변수 추가:
+## Client environment
 
-```json5
-{
-  skills: {
-    entries: {
-      "bootalk-properties": {
-        env: {
-          BOOTALK_API_URL: "https://api.bootalk.com",
-          BOOTALK_API_KEY: "your-internal-api-key",
-        },
-      },
-    },
-  },
-}
+현재 repo의 관련 skill은 다음 환경변수를 사용합니다.
+
+```text
+BOOTALK_API_URL=https://api.bootalk.com
+BOOTALK_API_KEY=<injected outside the repository>
 ```
+
+Codex automation에서는 automation secret store 또는 실행 환경에서 주입하고, prompt·memory·Slack 보고에 값을 남기지 않습니다. local CLI에서는 shell 환경변수로만 주입합니다.
+
+## Verification checklist
+
+- 대상 환경이 PROD인지 DEV인지 확인
+- endpoint가 실제로 배포되어 있는지 확인
+- read-only 조회인지 확인
+- HTTP status와 응답 schema를 확인
+- token이나 API key가 로그에 노출되지 않았는지 확인

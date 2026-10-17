@@ -2,7 +2,7 @@
 name: bootalk_deploy
 description: 배포 상태 확인, 최근 배포, 디플로이 현황, 롤백, 배포 로그 조회. Vercel CLI 사용.
 metadata:
-  openclaw:
+  codex:
     requires:
       bins: [vercel]
 ---

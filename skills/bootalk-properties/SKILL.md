@@ -2,7 +2,7 @@
 name: bootalk_properties
 description: 매물 현황, 아파트 시세, 매매가, 전세가, 거래량, 부동산 통계, 지역별 매물 수를 조회합니다.
 metadata:
-  openclaw:
+  codex:
     primaryEnv: BOOTALK_API_KEY
     requires:
       env: [BOOTALK_API_KEY, BOOTALK_API_URL]

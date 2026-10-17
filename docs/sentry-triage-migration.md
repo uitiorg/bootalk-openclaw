@@ -1,168 +1,26 @@
-# Sentry Triage Bot — Slack 마이그레이션 가이드
+# Sentry triage ownership migration
 
-## 현재 구조
+> 상태: 완료된 마이그레이션 기록. 마지막 문서 검토: 2026-08-10 KST.
 
-```
-Sentry.io (webhook)
-    │ POST https://sentry-hook.bootalk.co.kr/hooks/sentry?token=...
-    ▼
-Cloudflare Tunnel (sentry-hook)       ← launchd: com.cloudflare.sentry-hook
-    │ sentry-hook.bootalk.co.kr → localhost:19789
-    ▼
-OpenClaw Sentry Gateway (port 19789) ← launchd: ai.openclaw.sentry
-    │ Profile: sentry
-    │ Config: ~/.openclaw-sentry/openclaw.json
-    │ Model: gpt-5.3-codex (fallback: claude-opus-4-5)
-    │
-    ├── hooks/transforms/sentry.js   ← webhook payload → triage prompt
-    ├── SENTRY_RUNBOOK.md            ← 분류/대응 정책
-    │
-    └── Delivery: openclaw --profile main message send
-        → Telegram 그룹 (-5152975056)
-```
+Sentry triage·보고·예약 polling과 GitHub PR review triage는 OpenClaw에서 Codex automation으로 이전되었습니다. 본 Mac에서는 OpenClaw gateway와 그 local ingress runtime을 더 이상 실행하지 않습니다.
 
-## 마이그레이션 목표
+## Current ownership
 
-```
-변경 전: triage 결과 → Telegram 그룹
-변경 후: triage 결과 → Slack #sentry-alerts 채널
-```
+| Area | Owner | Notes |
+|---|---|---|
+| Sentry triage and reporting | Codex automation + `sentry-cli` skill | 예약 상태는 `~/.codex/automations/`에서 확인 |
+| Performance/error morning checks | Codex automation | report-only, Slack은 state-change 또는 material anomaly만 |
+| GitHub PR review triage | Codex automation | 현재 automation이 PAUSED인지 live TOML 확인 |
+| Slack delivery | Codex Slack connector 또는 명시적 webhook | webhook 답글이 실행 재개를 의미하지 않음 |
+| Public Sentry ingress | 현재 활성 runtime 없음 | 과거 OpenClaw compatibility 문서는 보존용 |
 
-바꿔야 할 것:
-1. `sentry.js`의 delivery 목적지
-2. `~/.openclaw-sentry/openclaw.json`에 Slack 채널 추가
-3. 메인 프로필 (`~/.openclaw/openclaw.json`)에도 Slack 설정 필요 (delivery가 main profile 경유)
+## Important boundaries
 
-바꾸지 않는 것:
-- Cloudflare Tunnel 설정 (그대로)
-- launchd 데몬들 (그대로)
-- SENTRY_RUNBOOK.md 정책 (그대로)
-- triage 분석 로직 (그대로)
+- Sentry alert firing, webhook ingress, triage 판단, Slack receipt는 서로 다른 증거입니다.
+- PR merge나 CI 성공만으로 production 배포를 주장하지 않습니다.
+- 반복된 동일 anomaly는 automation memory 기준으로 억제합니다.
+- 자동화가 issue·PR·배포·Slack 쓰기를 수행하는지 prompt의 scope와 실제 결과를 분리해 보고합니다.
 
-## 사전 준비
+## Historical material
 
-### 1. Slack App 생성
-
-[slack-setup.md](slack-setup.md) 참고. 동일한 Slack App으로 메인 Gateway + Sentry Gateway 모두 사용 가능.
-
-### 2. Slack에 #sentry-alerts 채널 생성
-
-```
-Slack Workspace → 채널 만들기 → #sentry-alerts
-→ 봇을 채널에 초대: /invite @Bootalk AI
-```
-
-## 마이그레이션 절차
-
-### Step 1: 메인 프로필에 Slack 추가
-
-`~/.openclaw/openclaw.json`의 `channels`에 Slack 추가:
-
-```json5
-{
-  "channels": {
-    "telegram": { /* 기존 설정 유지 */ },
-    "slack": {
-      "enabled": true,
-      "mode": "socket",
-      "appToken": "xapp-YOUR_APP_TOKEN",
-      "botToken": "xoxb-YOUR_BOT_TOKEN"
-    }
-  }
-}
-```
-
-### Step 2: sentry.js의 delivery 목적지 변경
-
-이 레포의 `sentry/transforms/sentry.js`는 이미 환경변수 기반으로 변경 가능하게 되어 있음.
-
-`~/.openclaw-sentry/openclaw.json`에서 환경변수 설정:
-
-```json5
-{
-  // 기존 설정...
-  "env": {
-    "SENTRY_DELIVERY_CHANNEL": "slack",
-    "SENTRY_DELIVERY_TARGET": "slack:#sentry-alerts"
-  }
-}
-```
-
-또는 launchd plist (`ai.openclaw.sentry.plist`)의 EnvironmentVariables에 추가:
-
-```xml
-<key>SENTRY_DELIVERY_CHANNEL</key>
-<string>slack</string>
-<key>SENTRY_DELIVERY_TARGET</key>
-<string>slack:#sentry-alerts</string>
-```
-
-### Step 3: transform 파일 교체
-
-```bash
-# 이 레포의 transform으로 교체
-cp sentry/transforms/sentry.js ~/.openclaw-sentry/hooks/transforms/sentry.js
-```
-
-### Step 4: SENTRY_RUNBOOK.md 심링크 (선택)
-
-레포의 runbook을 원본으로 사용하려면:
-
-```bash
-ln -sf /path/to/bootalk-openclaw/sentry/SENTRY_RUNBOOK.md \
-  ~/.openclaw/workspace/SENTRY_RUNBOOK.md
-```
-
-### Step 5: Gateway 재시작 + 테스트
-
-```bash
-# 메인 Gateway 재시작
-launchctl kickstart -k gui/$(id -u)/ai.openclaw.gateway
-
-# Sentry Gateway 재시작
-launchctl kickstart -k gui/$(id -u)/ai.openclaw.sentry
-
-# Sentry test webhook으로 확인
-# Sentry > Settings > Integrations > Internal Integration > Send Test
-```
-
-## 롤백 (문제 발생 시)
-
-```bash
-# 환경변수만 텔레그램으로 되돌리면 됨
-# SENTRY_DELIVERY_CHANNEL=telegram
-# SENTRY_DELIVERY_TARGET=telegram:-5152975056
-
-# 또는 원본 transform 복원
-cp ~/.openclaw-sentry/hooks/transforms/sentry.js.bak \
-   ~/.openclaw-sentry/hooks/transforms/sentry.js
-
-launchctl kickstart -k gui/$(id -u)/ai.openclaw.sentry
-```
-
-## 듀얼 채널 테스트 (권장)
-
-한번에 전환하지 말고, 양쪽 다 보내서 비교할 수도 있음:
-
-```javascript
-// sentry.js에서 양쪽 다 전송하는 임시 코드
-const deliveryInstructions = `
-Delivery (MANDATORY):
-1) /tmp/sentry_summary.txt 저장
-2) Telegram 전송: openclaw --profile main message send --channel telegram --target telegram:-5152975056 ...
-3) Slack 전송: openclaw --profile main message send --channel slack --target slack:#sentry-alerts ...
-`;
-```
-
-2주간 양쪽 비교 후 Telegram 제거.
-
-## FAQ
-
-**Q: Slack CLI를 설치해야 하나?**
-A: 아니오. OpenClaw이 `@slack/bolt` SDK를 내장하고 있어서, `appToken` + `botToken`만 설정하면 Socket Mode로 자동 연결됩니다.
-
-**Q: 기존 Cloudflare Tunnel을 바꿔야 하나?**
-A: 아니오. Sentry webhook → CF Tunnel → OpenClaw Gateway 경로는 동일합니다. 바뀌는 것은 triage 후 결과를 어디로 보내느냐(Telegram vs Slack)만입니다.
-
-**Q: Sentry Gateway와 메인 Gateway를 합칠 수 있나?**
-A: 가능하지만 비추천. 격리해둔 이유가 있음 (모델/리소스 충돌 방지, Sentry triage가 메인 대화에 영향 안 줌). 현재 구조 유지 권장.
+`docs-openclaw/sentry-pipeline.md`, `sentry/transforms/sentry.js`와 과거 debug journal은 당시 compatibility ingress와 silent transform을 설명합니다. 현재 서비스를 복원하는 설치·재시작 지침으로 사용하지 마세요.

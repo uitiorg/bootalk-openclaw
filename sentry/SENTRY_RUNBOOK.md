@@ -1,11 +1,11 @@
-# Sentry Triage Runbook (Pipeline Entry, Mandatory)
+# Sentry Triage Runbook (Codex task policy)
 
-> This is the **first rule document** for Sentry triage.
-> For every incoming Sentry hook (`created`/`unresolved`), read this file first and follow it strictly.
+> This is the policy document for every Codex Sentry triage task.
+> It is not a live webhook receiver and does not imply that an OpenClaw ingress exists.
 
 ---
 
-## 0) Mandatory preflight (every hook)
+## 0) Mandatory preflight (every triage task)
 
 1. Read this file fully before classification.
 2. Fetch Sentry API originals:

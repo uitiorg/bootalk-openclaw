@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>부톡봇 사용 가이드</title>
+  <title>Bootalk 운영 가이드</title>
   <style>
     /* ── Apple Design System ── */
     :root {
@@ -324,7 +324,7 @@
 <!-- Nav -->
 <nav>
   <div class="nav-inner">
-    <a class="nav-brand" href="#">🤖 부톡봇</a>
+    <a class="nav-brand" href="#">Bootalk operations</a>
     <a class="nav-link" href="works-migration.html">WORKS 마이그레이션 현황</a>
   </div>
 </nav>
@@ -332,19 +332,19 @@
 <!-- Info bar -->
 <div class="info-bar">
   <a href="works-migration.html">
-    WORKS → Slack Canvas 마이그레이션 완료 (23/23) <span class="chevron">›</span>
+    현재 실행 경로: Codex automation + Slack connector <span class="chevron">›</span>
   </a>
 </div>
 
 <!-- Hero -->
 <div class="hero">
   <div class="hero-inner">
-    <p class="hero-eyebrow">uitiorg / bootalk-openclaw</p>
-    <h1>부톡봇 사용 가이드</h1>
-    <p class="hero-sub">Slack에서 자연어로 업무를 처리하세요.<br>정확한 명령어 없이 평소 말하듯 요청하면 알아서 처리합니다.</p>
+    <p class="hero-eyebrow">uitiorg / bootalk operations</p>
+    <h1>Bootalk 운영 가이드</h1>
+    <p class="hero-sub">재사용 가능한 업무 스킬과 CLI를 확인하세요.<br>예약 작업은 Codex automation이, 실시간 Slack 작업은 connector가 담당합니다.</p>
     <div class="hero-badge">
       <span class="live-dot"></span>
-      DM 또는 채널에서 @부톡봇 멘션
+      현재 실행: Codex task 또는 명시적 Slack connector 요청
     </div>
   </div>
 </div>
@@ -354,7 +354,7 @@
   <div class="section-inner">
     <p class="section-label">캘린더 &amp; 연차</p>
     <h2 class="section-heading">일정과 휴가를 말로 관리하세요</h2>
-    <p class="section-desc">구글 캘린더와 연동되어 일정 추가·조회·연차 등록을 자연어로 처리합니다.</p>
+    <p class="section-desc">Google Calendar와 Gmail CLI를 명시적으로 실행해 일정·연차를 처리합니다. 상주 Slack 봇이 자동으로 실행하지는 않습니다.</p>
 
     <div class="legend">
       <div class="legend-item"><span class="badge badge-done">완료</span> 검증된 기능</div>
@@ -370,7 +370,7 @@
         </div>
         <div class="card-top">
           <div class="card-title">연차 · 반차 등록</div>
-          <span class="badge badge-done">완료</span>
+          <span class="badge badge-done">CLI 지원</span>
         </div>
         <div class="examples">
           <div class="ex"><span class="ex-label">종일 연차</span><span class="ex-text">"나 4월 15일 연차야"</span></div>
@@ -379,7 +379,7 @@
           <div class="ex"><span class="ex-label">연속 연차</span><span class="ex-text">"28~30일 연차"</span></div>
           <div class="ex"><span class="ex-label">대리 등록</span><span class="ex-text">"배지은 4월 10일 연차 등록해줘"</span></div>
         </div>
-        <div class="card-note">부톡 연차 캘린더 (팀 전체 공유) · 등록 즉시 <code>holiday.uiti@gmail.com</code>로 자동 알림 메일 발송 (제목 예: <code>[오전반차] 26.04.20 주우철</code>)</div>
+        <div class="card-note"><code>scripts/cal.py</code> 직접 실행 · Calendar 성공 후 Gmail 발송 · 테스트는 <code>--no-email</code></div>
       </div>
 
       <div class="card">
@@ -388,13 +388,13 @@
         </div>
         <div class="card-top">
           <div class="card-title">연차 현황 조회</div>
-          <span class="badge badge-done">완료</span>
+          <span class="badge badge-done">CLI 지원</span>
         </div>
         <div class="examples">
           <div class="ex"><span class="ex-label">이번 달</span><span class="ex-text">"이번 달 연차 현황 알려줘"</span></div>
           <div class="ex"><span class="ex-label">현황</span><span class="ex-text">"이번 달 누가 쉬어?"</span></div>
         </div>
-        <div class="card-note">부톡 연차 캘린더에서만 조회 (팀 캘린더와 별개)</div>
+        <div class="card-note"><code>python3 scripts/cal.py leaves</code>로 조회 · 인증 파일은 repo 밖에서 관리</div>
       </div>
 
       <div class="card">
@@ -403,14 +403,14 @@
         </div>
         <div class="card-top">
           <div class="card-title">팀 일정 추가 · 조회</div>
-          <span class="badge badge-done">완료</span>
+          <span class="badge badge-done">CLI 지원</span>
         </div>
         <div class="examples">
           <div class="ex"><span class="ex-label">일정 추가</span><span class="ex-text">"오늘 3시에 스프린트 회의 잡아줘"</span></div>
           <div class="ex"><span class="ex-label">조회</span><span class="ex-text">"이번 주 일정 보여줘"</span></div>
           <div class="ex"><span class="ex-label">데드라인</span><span class="ex-text">"4월 10일 배포일로 등록해줘"</span></div>
         </div>
-        <div class="card-note">부톡 팀 캘린더 (회의·이벤트용)</div>
+        <div class="card-note">`agenda`와 `add` 명령 사용 · 실행 전 대상과 side effect 확인</div>
       </div>
 
     </div>
@@ -422,7 +422,7 @@
   <div class="section-inner">
     <p class="section-label">Slack 관리</p>
     <h2 class="section-heading">채널과 캔버스를 손쉽게</h2>
-    <p class="section-desc">채널 캔버스 생성·수정과 멤버 관리를 Slack에서 바로 처리합니다.</p>
+    <p class="section-desc">Slack connector 또는 명시적 Slack API 작업으로 캔버스와 멤버를 관리합니다. OpenClaw Socket Mode는 사용하지 않습니다.</p>
 
     <div class="grid">
 
@@ -439,7 +439,7 @@
           <div class="ex"><span class="ex-label">수정</span><span class="ex-text">"업무규칙 캔버스에 내용 추가해줘"</span></div>
           <div class="ex"><span class="ex-label">읽기</span><span class="ex-text">"개발팀 캔버스 내용 보여줘"</span></div>
         </div>
-        <div class="card-note">관리자 전용</div>
+        <div class="card-note">관리자 요청과 live channel 재검증 필요 · `scripts/verify-canvas-migration.py` 제공</div>
       </div>
 
       <div class="card">
@@ -454,7 +454,7 @@
           <div class="ex"><span class="ex-label">초대</span><span class="ex-text">"#dev 채널에 홍길동 초대해줘"</span></div>
           <div class="ex"><span class="ex-label">조회</span><span class="ex-text">"누가 어느 채널에 있어?"</span></div>
         </div>
-        <div class="card-note">관리자 전용</div>
+        <div class="card-note">관리자 요청과 live membership 재검증 필요</div>
       </div>
 
     </div>
@@ -465,8 +465,8 @@
 <section>
   <div class="section-inner">
     <p class="section-label">업무 관리</p>
-    <h2 class="section-heading">주간 회고와 보고서를 자동화</h2>
-    <p class="section-desc">GitHub 활동 기반으로 KPT 회고와 주간 보고서를 생성합니다. 구현은 되어 있지만 충분히 검증되지 않은 기능입니다.</p>
+    <h2 class="section-heading">Codex automation으로 업무를 점검</h2>
+    <p class="section-desc">GitHub 활동 기반 KPT·보고서와 예약된 에러·성능 점검은 Codex automation이 담당합니다. 실제 활성 상태는 automation TOML과 memory를 확인하세요.</p>
 
     <div class="grid">
 
@@ -476,12 +476,12 @@
         </div>
         <div class="card-top">
           <div class="card-title">주간 회고 (KPT)</div>
-          <span class="badge badge-wip">미검증</span>
+          <span class="badge badge-wip">Task 지원</span>
         </div>
         <div class="examples">
           <div class="ex"><span class="ex-label">생성</span><span class="ex-text">"이번 주 KPT 작성해줘"</span></div>
         </div>
-        <div class="card-note">GitHub 활동 수집 후 team-discussions 게시</div>
+        <div class="card-note">현재 작업 상태와 게시 여부를 실행 결과로 확인</div>
       </div>
 
       <div class="card">
@@ -490,13 +490,13 @@
         </div>
         <div class="card-top">
           <div class="card-title">주간 보고서</div>
-          <span class="badge badge-wip">미검증</span>
+          <span class="badge badge-wip">Task 지원</span>
         </div>
         <div class="examples">
           <div class="ex"><span class="ex-label">생성</span><span class="ex-text">"이번 주 대표님 보고 자료 만들어줘"</span></div>
           <div class="ex"><span class="ex-label">요약</span><span class="ex-text">"이번 주 뭐했어? 비개발자 언어로"</span></div>
         </div>
-        <div class="card-note">GitHub 활동 기반 경영진 리포트</div>
+        <div class="card-note">자동화·수동 task 모두 report-only 정책을 우선 확인</div>
       </div>
 
     </div>
@@ -506,9 +506,9 @@
 <!-- Section 4: 준비중 -->
 <section>
   <div class="section-inner">
-    <p class="section-label">준비중</p>
-    <h2 class="section-heading">곧 추가될 기능</h2>
-    <p class="section-desc">현재 개발 계획 중인 기능입니다. API 키 설정 이후 순차적으로 지원할 예정입니다.</p>
+    <p class="section-label">확인 필요</p>
+    <h2 class="section-heading">환경별로 다시 확인할 기능</h2>
+    <p class="section-desc">API 권한, live Slack membership, 배포 상태가 필요한 작업은 이 페이지의 설명만으로 완료를 주장하지 않습니다.</p>
 
     <div class="grid">
 
@@ -518,7 +518,7 @@
         </div>
         <div class="card-top">
           <div class="card-title">회원 · 중개사 조회</div>
-          <span class="badge badge-stub">준비중</span>
+          <span class="badge badge-stub">권한 필요</span>
         </div>
         <div class="card-note">BOOTALK_API_KEY 설정 필요</div>
       </div>
@@ -529,7 +529,7 @@
         </div>
         <div class="card-top">
           <div class="card-title">매물 · 부동산 통계</div>
-          <span class="badge badge-stub">준비중</span>
+          <span class="badge badge-stub">권한 필요</span>
         </div>
         <div class="card-note">BOOTALK_API_KEY 설정 필요</div>
       </div>
@@ -546,7 +546,7 @@
       &nbsp;·&nbsp;
       <a href="works-migration.html">WORKS 마이그레이션 현황</a>
     </p>
-    <p style="margin-top:8px;">Copyright © 2026 Bootalk. All rights reserved.</p>
+    <p style="margin-top:8px;">Current runtime: Codex automation + Slack connector · Copyright © 2026 Bootalk</p>
   </div>
 </footer>
 

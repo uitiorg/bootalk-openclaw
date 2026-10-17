@@ -1,5 +1,7 @@
 # Production Issue Tracking — Implementation Plan
 
+> Historical implementation plan. 체크리스트와 OpenClaw 경로는 과거 작업 기록이며 현재 실행 절차가 아닙니다.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** #dev 채널에서 봇을 통해 production 이슈를 등록하고, GitHub Issues + Slack Canvas로 추적하는 시스템 구현

@@ -11,6 +11,7 @@
   python3 cal.py leave "이름" "2026-04-10" --half-am  # 오전 반차
   python3 cal.py leave "이름" "2026-04-10" --half-pm  # 오후 반차
   python3 cal.py leave "이름" "2026-04-10" 3          # 3일 연차
+  python3 cal.py leave "이름" "2026-04-10" --remaining "12일 (사용 후)"  # 잔여 연차 명시
   python3 cal.py leave "이름" "2026-04-10" --no-email # 이메일 발송 스킵 (테스트용)
   python3 cal.py leaves              # 이번 달 연차 현황
 
@@ -64,8 +65,8 @@ def format_email_subject(name: str, leave_type: str, start_date: date) -> str:
 _WEEKDAY_KR = ["월", "화", "수", "목", "금", "토", "일"]
 
 
-def format_email_body(name: str, leave_type: str, start_date: date, days: int, time_range: str, now: datetime) -> str:
-    """이메일 본문 5줄. 직책은 의도적으로 표기하지 않음."""
+def format_email_body(name: str, leave_type: str, start_date: date, days: int, time_range: str, now: datetime, remaining: str = None) -> str:
+    """이메일 본문. 직책은 의도적으로 표기하지 않음. remaining 제공 시 잔여 연차 라인 추가."""
     weekday = _WEEKDAY_KR[start_date.weekday()]
     if days > 1:
         end_date = start_date + timedelta(days=days - 1)
@@ -80,6 +81,8 @@ def format_email_body(name: str, leave_type: str, start_date: date, days: int, t
         f"신청일시: {now.strftime('%Y-%m-%d %H:%M KST')}",
         "신청 경로: 부톡봇 (Slack)",
     ]
+    if remaining:
+        lines.append(f"잔여 연차: {remaining}")
     return "\n".join(lines)
 
 
@@ -91,6 +94,8 @@ TEAM_EMAILS = {
     "정정일":  "jji.bootalk@gmail.com",
     "배지은":  "bje.uiti@gmail.com",
     "전유진":  "cyj.uiti@gmail.com",
+    "유상근":  "ysg.uiti@gmail.com",
+    "안기웅":  "agu.uiti@gmail.com",
 }
 
 
@@ -201,11 +206,12 @@ def cmd_add(service, title, start_str, duration_min=60, allday=False):
 
 
 # ─── notify_email: HR에 알림 발송 ─────────────────────────────────────────────
-def notify_email(creds, name, leave_type, start_date, days, time_range):
+def notify_email(creds, name, leave_type, start_date, days, time_range, remaining=None):
     """RECIPIENT_EMAIL 로 연차 신청 알림 1통 발송.
 
     From display name은 신청자 한국어 이름.
     Reply-To는 매핑된 신청자 본인 이메일 (없으면 헤더 생략).
+    remaining 제공 시 본문에 잔여 연차 라인 포함.
     """
     from email.mime.text import MIMEText
     from email.utils import formataddr
@@ -222,6 +228,7 @@ def notify_email(creds, name, leave_type, start_date, days, time_range):
         days=days,
         time_range=time_range,
         now=datetime.now(KST),
+        remaining=remaining,
     )
 
     msg = MIMEText(body, "plain", "utf-8")
@@ -241,7 +248,7 @@ def notify_email(creds, name, leave_type, start_date, days, time_range):
 
 
 # ─── leave: 연차 등록 ─────────────────────────────────────────────────────────
-def cmd_leave(service, creds, name, date_str, days=1, half_am=False, half_pm=False, send_email=True):
+def cmd_leave(service, creds, name, date_str, days=1, half_am=False, half_pm=False, send_email=True, remaining=None):
     cal_id = get_calendar_id(service, LEAVE_CAL)
 
     try:
@@ -293,7 +300,7 @@ def cmd_leave(service, creds, name, date_str, days=1, half_am=False, half_pm=Fal
                 time_range = HALF_PM_RANGE
             else:
                 time_range = "종일"
-            notify_email(creds, name, leave_type, start_date, int(days), time_range)
+            notify_email(creds, name, leave_type, start_date, int(days), time_range, remaining=remaining)
             print(f"📧 이메일 발송 완료: {RECIPIENT_EMAIL}")
         except Exception as e:
             print(f"⚠️  이메일 발송 실패 (캘린더는 등록됨): {e}", file=sys.stderr)
@@ -350,16 +357,21 @@ def main():
 
     elif cmd == "leave":
         if len(args) < 3:
-            print('사용법: cal.py leave "이름" "YYYY-MM-DD" [일수|--half-am|--half-pm] [--no-email]')
+            print('사용법: cal.py leave "이름" "YYYY-MM-DD" [일수|--half-am|--half-pm] [--remaining "..."] [--no-email]')
             sys.exit(1)
         name      = args[1]
         date_str  = args[2]
         half_am   = "--half-am" in args
         half_pm   = "--half-pm" in args
         no_email  = "--no-email" in args
-        days_args = [a for a in args[3:] if not a.startswith("--")]
+        remaining = None
+        if "--remaining" in args:
+            idx = args.index("--remaining")
+            if idx + 1 < len(args):
+                remaining = args[idx + 1]
+        days_args = [a for a in args[3:] if not a.startswith("--") and a != remaining]
         days      = int(days_args[0]) if days_args else 1
-        cmd_leave(service, creds, name, date_str, days, half_am, half_pm, send_email=not no_email)
+        cmd_leave(service, creds, name, date_str, days, half_am, half_pm, send_email=not no_email, remaining=remaining)
 
     elif cmd == "leaves":
         cmd_leaves(service)

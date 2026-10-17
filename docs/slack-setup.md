@@ -1,77 +1,15 @@
-# Slack App 설정 가이드
+# Slack App 설정 기록
 
-## 1. Slack App 생성
+> 상태: 역사 기록. 2026-08-10 현재 본 Mac의 OpenClaw gateway와 Socket Mode는 제거되었습니다.
 
-1. https://api.slack.com/apps → **Create New App** → **From scratch**
-2. App Name: `Bootalk AI`
-3. Workspace: 부톡 워크스페이스 선택
+이 문서는 과거 Bootalk Slack App을 OpenClaw에 연결할 때 사용했던 설정 기록입니다. 현재 Slack live context와 메시지 작업은 Codex Slack connector 또는 명시적인 Slack API 호출을 사용합니다.
 
-## 2. Socket Mode 활성화
+현재 작업에서 이 문서의 `xapp-`, `xoxb-`, `openclaw.json`, Socket Mode, `openclaw gateway` 명령을 실행하지 마세요. 토큰을 재발급하거나 Slack App을 변경해야 하는 경우에는 Slack connector와 공식 Slack App 설정을 기준으로 별도 검토합니다.
 
-1. **Settings > Socket Mode** → Enable
-2. Token Name: `bootalk-socket` → Generate
-3. `xapp-...` 토큰 복사 → `openclaw.json`의 `appToken`에 입력
+과거 설정의 목적은 다음과 같았습니다.
 
-## 3. Bot Token Scopes 추가
+- Slack App에 필요한 Bot Scope와 Event Subscription을 기록
+- App Home과 DM 사용 설정을 기록
+- Socket Mode 연결 확인 명령을 기록
 
-**OAuth & Permissions > Bot Token Scopes**에서 추가:
-
-```
-chat:write
-channels:history
-channels:read
-groups:history
-im:history
-im:read
-im:write
-mpim:history
-mpim:read
-mpim:write
-users:read
-app_mentions:read
-assistant:write
-reactions:read
-reactions:write
-pins:read
-pins:write
-emoji:read
-commands
-files:read
-files:write
-```
-
-## 4. Event Subscriptions 활성화
-
-**Event Subscriptions** → Enable → **Subscribe to bot events**:
-
-```
-app_mention
-message.channels
-message.groups
-message.im
-message.mpim
-reaction_added
-reaction_removed
-member_joined_channel
-member_left_channel
-channel_rename
-pin_added
-pin_removed
-```
-
-## 5. App Home 설정
-
-**App Home** → **Messages Tab** 활성화 (DM 가능하게)
-
-## 6. 워크스페이스에 설치
-
-**Install App** → Install to Workspace → `xoxb-...` 토큰 복사 → `openclaw.json`의 `botToken`에 입력
-
-## 7. 연결 확인
-
-```bash
-openclaw gateway
-openclaw channels status --probe
-```
-
-Slack에서 `@Bootalk AI` 멘션하면 응답이 와야 합니다.
+현재 repo 운영 기준은 [`AGENTS.md`](../AGENTS.md)와 [`README.md`](../README.md)입니다.

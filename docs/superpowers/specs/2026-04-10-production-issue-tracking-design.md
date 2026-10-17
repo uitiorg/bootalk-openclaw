@@ -1,5 +1,7 @@
 # Production Issue Tracking System — Design Spec
 
+> Historical design snapshot. 이 문서의 OpenClaw·Slack bot·Weekly Board 자동화 흐름은 현재 runtime이 아닙니다. 현재는 명시적 Codex task와 Slack connector 경계를 따릅니다.
+
 **Date:** 2026-04-10
 **Channel:** #dev (C0APYE7MLEN)
 **Goal:** Production에서 발견된 이슈를 #dev 채널에서 봇을 통해 등록하고, GitHub Issues + Slack Canvas로 추적하는 시스템

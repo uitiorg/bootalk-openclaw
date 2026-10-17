@@ -1,223 +1,69 @@
-# bootalk-openclaw
+# Bootalk operations library
 
-OpenClaw skills, Sentry triage config, and Slack integration for the Bootalk team.
+Bootalk 팀의 업무 스킬, CLI 스크립트, Slack 운영 참고자료와 마이그레이션 기록을 관리하는 저장소입니다.
 
-**No separate server required.** OpenClaw Gateway runs locally and connects to Slack via Socket Mode. Skills are markdown files — no code, no deployment.
+현재 이 저장소는 상주 봇이나 로컬 서버가 아닙니다. 실행 주체는 다음과 같이 분리되어 있습니다.
 
-## 🆕 Recently Added (2026-04-28)
+| 실행 주체 | 역할 |
+|---|---|
+| Codex automation | 예약된 에러·성능·배포·문서 점검과 보고 |
+| Slack connector / Slack API | 실시간 채널·사용자 조회와 명시적으로 요청된 Slack 작업 |
+| 이 repo의 스크립트 | 캘린더, 연차, Slack Canvas 검증 등 직접 실행 가능한 업무 로직 |
+| 이 repo의 문서 | 업무 규칙, 권한 경계, 과거 마이그레이션의 버전 관리 |
 
-**연차 등록 시 자동 이메일 알림** — 부톡봇으로 연차/반차를 등록하면 "부톡 연차" 캘린더 등록과 동시에 `holiday.uiti@gmail.com` (HR)로 알림 메일 1통이 자동 발송됩니다.
+## Current status
 
-- 메일 제목: `[오전반차] 26.05.13 주우철` 형식
-- From: `<신청자 이름> <cdo.bootalk@gmail.com>` — 시각적으로 신청자 본인이 보낸 것처럼 표시
-- Reply-To: 신청자 본인 이메일 (HR이 답장 시 신청자에게 직접 도달)
-- 반차 시간: 오전 09:30~13:30 / 오후 13:30~18:30
-- 자세한 동작·구성·예시: [`docs/leave-email-feature.md`](docs/leave-email-feature.md)
+2026-08-10 KST 기준 확인된 상태입니다. 자동화 목록과 실행 결과는 `/Users/juucheol/.codex/automations/`가 source of truth입니다.
 
-## Architecture
+- 본 Mac의 OpenClaw 명령, gateway, Socket Mode 런타임은 제거되었습니다.
+- Codex automation은 11개가 등록되어 있고 8개가 활성, 3개가 일시정지 상태입니다.
+- 에러·성능 autopilot은 Codex automation이 소유합니다. 이 repo는 해당 작업의 실행 엔진이 아닙니다.
+- Sentry public ingress와 PR polling의 OpenClaw 중복 경로는 사용하지 않습니다.
+- Slack 채널·멤버 표는 참고용 snapshot일 뿐이며, 새 작업 전 Slack connector로 다시 확인해야 합니다.
 
-```
-Slack Workspace
-    │ Socket Mode (WebSocket)
-    ▼
-OpenClaw Gateway (local Mac, port 18789)
-    │
-    ├── Skills (this repo)
-    │   ├── 매물 조회     → curl → btalk2.1_backend API
-    │   ├── KPT 회고      → gh CLI → GitHub API
-    │   ├── 배포 상태     → vercel CLI
-    │   ├── 회원 조회     → curl → btalk2.1_backend API
-    │   └── 주간 보고     → gh CLI → GitHub API
-    │
-    ├── Sentry Triage Bot (separate gateway, port 19789)
-    │   └── CF Tunnel → webhook transform → triage → Slack/Telegram
-    │
-    └── Google Drive    → Slack native integration (별도 설치)
-```
+## Use this repository
 
-## Integration Progress
+| Path | Purpose |
+|---|---|
+| `skills/*/SKILL.md` | Codex 또는 수동 작업에서 재사용할 Bootalk 업무 지침 |
+| `scripts/cal.py` | Google Calendar/Gmail 기반 일정·연차 CLI |
+| `scripts/verify-canvas-migration.py` | Slack Canvas 마이그레이션 검증 |
+| `team/channels.md` | Slack ID와 채널의 참고 snapshot |
+| `sentry/SENTRY_RUNBOOK.md` | Sentry triage 판단 정책 |
+| `docs/` | 공개 문서와 업무 기능 설명 |
+| `docs-openclaw/` | 더 이상 실행하지 않는 OpenClaw 참고 문서 |
+| `config/openclaw.example.json5` | 폐기된 설정의 호환성 기록 |
 
-| Item | Status | Notes |
-|------|--------|-------|
-| **OpenClaw Gateway** | ✅ Running | `launchd` daemon on port 18789 |
-| **Telegram channel** | ✅ Connected | Main + gamedev + career agents |
-| **Sentry triage bot** | ✅ Running | Separate gateway on port 19789, CF Tunnel, delivers to Telegram |
-| **Skills (this repo)** | ✅ Loaded | 6 skills, `extraDirs` 연결 완료, git hook으로 자동 동기화 |
-| **Slack workspace** | ✅ Done | WORKS 게시판 57개 포스트 마이그레이션 완료 |
-| **Slack App (tokens)** | ✅ Done | `xapp-` + `xoxb-` 발급 및 연결 완료 |
-| **OpenClaw ↔ Slack** | ✅ Connected | Socket Mode, `channels.slack` 설정 완료 |
-| **Google Drive ↔ Slack** | ✅ Done | Google Drive 앱 설치, 도메인 인증 활성화 |
-| **Slack channels setup** | ✅ Done | 11개 채널, WORKS 아카이브 핀 메시지 세팅 완료 |
-| **Backend auth endpoint** | ⬜ Not started | `InternalAuthController.kt` — 1 file to add to btalk2.1_backend |
-| **Sentry → Slack delivery** | ⬜ Not started | Set `SENTRY_DELIVERY_CHANNEL=slack` env var |
+## Safe workflow
 
-## Setup
+1. Slack의 현재 채널·멤버·메시지는 connector에서 조회합니다. `team/channels.md`의 ID를 최신 사실로 가정하지 않습니다.
+2. 예약 작업의 상태·스케줄·최근 실행은 `/Users/juucheol/.codex/automations/*/automation.toml`과 각 `memory.md`에서 확인합니다.
+3. 캘린더·연차·메일처럼 side effect가 있는 CLI는 사용자의 명시적 요청과 필요한 값이 모두 있을 때만 실행합니다.
+4. Slack 메시지나 webhook을 받았다는 사실만으로 GitHub·캘린더·메일 작업을 자동 승인하지 않습니다.
+5. 토큰, OAuth 파일, webhook URL, 내부 API key는 출력하거나 커밋하지 않습니다.
 
-### Prerequisites
-
-- OpenClaw installed and gateway running (`openclaw gateway`)
-- `gh` CLI authenticated (`gh auth login`)
-- `gog` CLI authenticated (`gog auth`, account: `cdo.bootalk@gmail.com`)
-- `vercel` CLI linked (for deploy skill)
-
-### 1. Clone and link skills
+## Calendar and leave CLI
 
 ```bash
-git clone git@github.com:uitiorg/bootalk-openclaw.git ~/Bootalk/bootalk-openclaw
+python3 scripts/cal.py agenda
+python3 scripts/cal.py leaves
+python3 scripts/cal.py add "주간 회의" "2026-04-07 10:00" 60
+python3 scripts/cal.py leave "이름" "YYYY-MM-DD" --remaining "사용 후 잔여일"
 ```
 
-`~/.openclaw/openclaw.json`의 `skills` 섹션에 아래를 추가:
+연차 등록은 `--remaining` 값을 반드시 받아야 합니다. Gmail 알림까지 보내지 않는 테스트는 `--no-email`을 사용합니다. 실제 Calendar/Gmail side effect 전에는 대상자, 날짜, 반차 여부, 잔여 연차를 다시 확인합니다.
 
-```json5
-{
-  "skills": {
-    "load": {
-      "extraDirs": ["/Users/juucheol/Bootalk/bootalk-openclaw/skills"]
-    }
-  }
-}
-```
+## Service API authentication
 
-### 2. Add Slack channel to OpenClaw
+`BOOTALK_API_URL`과 `BOOTALK_API_KEY`가 필요한 스킬은 서비스 토큰을 발급한 뒤 API를 호출합니다. 자세한 내용은 [`docs/api-auth.md`](docs/api-auth.md)를 참고하세요. 토큰 값 자체는 문서와 로그에 남기지 않습니다.
 
-See [docs/slack-setup.md](docs/slack-setup.md) for step-by-step Slack App creation.
+## Retired OpenClaw material
 
-Add to `~/.openclaw/openclaw.json`:
+`docs-openclaw/`, `docs/slack-setup.md`, `config/openclaw.example.json5`와 일부 설계 문서는 과거 OpenClaw/Slack Socket Mode 구성의 보존 기록입니다. 현재 gateway를 설치하거나 되살리는 절차로 사용하지 마세요. 현재 운영 경계는 [`AGENTS.md`](AGENTS.md)와 Codex automation 설정입니다.
 
-```json5
-{
-  "channels": {
-    // ... existing telegram config ...
-    "slack": {
-      "enabled": true,
-      "mode": "socket",
-      "appToken": "xapp-YOUR_APP_TOKEN",
-      "botToken": "xoxb-YOUR_BOT_TOKEN"
-    }
-  }
-}
-```
+## Contributing
 
-### 3. Add backend auth endpoint
-
-One file to add to `btalk2.1_backend` — see [docs/api-auth.md](docs/api-auth.md).
-
-This enables skills to call existing backend APIs with `UserRole.SERVICE` authentication.
-
-### 4. Configure skill environment variables
-
-```json5
-// ~/.openclaw/openclaw.json
-{
-  "skills": {
-    "entries": {
-      "bootalk-properties": {
-        "env": {
-          "BOOTALK_API_URL": "https://api.bootalk.com",
-          "BOOTALK_API_KEY": "your-internal-api-key"
-        }
-      }
-    }
-  }
-}
-```
-
-### 5. Restart gateway and verify
-
-```bash
-launchctl kickstart -k gui/$(id -u)/ai.openclaw.gateway
-openclaw channels status --probe
-```
-
-Test in Slack: `@Bootalk AI 안녕`
-
-## Structure
-
-```
-skills/                          # OpenClaw skills (SKILL.md)
-├── bootalk-properties/          # 매물 현황, 시세, 거래량 조회
-├── bootalk-kpt/                 # 주간 KPT 회고 생성
-├── bootalk-deploy/              # Vercel 배포 상태/로그/롤백
-├── bootalk-members/             # 회원/중개사 검색
-└── bootalk-weekly-report/       # 경영진 주간 보고 (비개발자 언어)
-sentry/                          # Sentry triage bot
-├── transforms/sentry.js         # Webhook transform (env-based delivery target)
-└── SENTRY_RUNBOOK.md            # Triage 정책 (분류/대응/기록)
-docs/
-├── slack-setup.md               # Slack App 생성 가이드
-├── skill-guide.md               # Skill 작성 방법
-├── api-auth.md                  # Backend 서비스 토큰 인증
-└── sentry-triage-migration.md   # Sentry Telegram → Slack 마이그레이션
-config/
-└── openclaw.example.json5       # 설정 템플릿 (토큰 제외)
-```
-
-## 로컬 OpenClaw와 동기화 방법
-
-### 동작 원리
-
-이 레포의 `skills/` 폴더는 `~/.openclaw/openclaw.json`의 `extraDirs`를 통해 OpenClaw Gateway에 직접 연결되어 있습니다. Gateway는 실행 시 해당 폴더를 읽어 스킬을 로드합니다.
-
-```
-이 레포 (skills/)
-    ↓  extraDirs로 직접 참조 (복사 없음)
-~/.openclaw/openclaw.json
-    ↓
-OpenClaw Gateway (port 18789)
-    ↓  Socket Mode
-Slack / Telegram
-```
-
-### SKILL.md를 수정하면?
-
-Gateway를 재시작해야 변경사항이 반영됩니다:
-
-```bash
-launchctl kickstart -k gui/$(id -u)/ai.openclaw.gateway
-```
-
-### git pull 시 자동 재시작
-
-`.git/hooks/post-merge` 훅이 설정되어 있어 `git pull` 후 Gateway가 자동으로 재시작됩니다:
-
-```bash
-# .git/hooks/post-merge (이미 설정됨)
-launchctl kickstart -k gui/$(id -u)/ai.openclaw.gateway
-```
-
-즉, **`git pull`만 하면 봇에 바로 반영**됩니다. 별도 배포나 서버 재시작 없음.
-
-### 새 팀원이 이 레포를 클론할 때
-
-```bash
-git clone git@github.com:uitiorg/bootalk-openclaw.git ~/Bootalk/bootalk-openclaw
-
-# openclaw.json에 extraDirs 추가 (위 Setup 섹션 참고)
-
-# post-merge 훅은 git hook이라 클론 시 자동으로 따라오지 않음 — 수동 설정 필요:
-echo 'launchctl kickstart -k gui/$(id -u)/ai.openclaw.gateway' \
-  > ~/Bootalk/bootalk-openclaw/.git/hooks/post-merge
-chmod +x ~/Bootalk/bootalk-openclaw/.git/hooks/post-merge
-```
-
----
-
-## Adding a new skill
-
-`skills/<name>/SKILL.md` 파일을 추가하면 됩니다. 코드 작성 불필요, 배포 불필요.
-
-작성 가이드: [docs/skill-guide.md](docs/skill-guide.md)
-
-Key points:
-- `description` 필드에 사용자가 실제로 말할 **트리거 키워드**를 넣을 것
-- `When to Use` 섹션이 AI의 스킬 선택을 결정함
-- `Commands`는 구체적인 bash 명령어로 작성
-
-## Docs
-
-| Document | Purpose |
-|----------|---------|
-| [Slack Setup](docs/slack-setup.md) | Slack App 생성 + OpenClaw 연결 |
-| [Skill Guide](docs/skill-guide.md) | 새 스킬 작성 방법 |
-| [API Auth](docs/api-auth.md) | btalk2.1_backend 서비스 토큰 인증 |
-| [Sentry Migration](docs/sentry-triage-migration.md) | Sentry triage Telegram → Slack 전환 |
+- 업무 규칙이나 실행 명령을 바꿀 때 source 문서와 관련 스킬을 함께 갱신합니다.
+- 채널 ID·멤버·권한은 Slack live state로 재검증한 날짜와 범위를 기록합니다.
+- 공개 `docs/`에는 secret, 개인 OAuth 파일, 내부 endpoint 세부값을 넣지 않습니다.
+- 문서 변경 후 stale한 OpenClaw 실행 경로, 오래된 날짜, 깨진 링크를 검색하고 관련 CLI 테스트를 실행합니다.

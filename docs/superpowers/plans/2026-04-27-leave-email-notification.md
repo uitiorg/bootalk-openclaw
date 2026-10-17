@@ -1,5 +1,7 @@
 # 연차 신청 시 이메일 자동 발송 — Implementation Plan
 
+> Historical implementation plan. 이 문서의 OpenClaw gateway 재시작·Slack end-to-end 단계는 더 이상 수행하지 않습니다. 현재 CLI 실행 규칙은 `docs/leave-email-feature.md`를 기준으로 합니다.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 부톡봇으로 연차/반차가 등록되면 캘린더 등록 직후 `holiday.uiti@gmail.com`으로 알림 이메일 1통을 자동 발송한다.

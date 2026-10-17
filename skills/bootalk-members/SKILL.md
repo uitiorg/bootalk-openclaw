@@ -2,7 +2,7 @@
 name: bootalk_members
 description: 회원 검색, 중개사 조회, 가입자 수, 사용자 정보 조회. btalk2.1_backend API 사용.
 metadata:
-  openclaw:
+  codex:
     primaryEnv: BOOTALK_API_KEY
     requires:
       env: [BOOTALK_API_KEY, BOOTALK_API_URL]

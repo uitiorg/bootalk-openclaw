@@ -2,7 +2,7 @@
 name: bootalk_issues
 description: Production 이슈 등록·조회·해결. "이슈 등록: 매물 상세 로딩 안됨", "이슈 목록", "이슈 해결: #47", "프로덕션 버그", "production bug" 등.
 metadata:
-  openclaw:
+  codex:
     requires:
       env: [SLACK_BOT_TOKEN]
       bins: [gh, python3]
@@ -10,7 +10,9 @@ metadata:
 
 # Production Issue Tracker
 
-production에서 발견된 이슈를 GitHub Issues로 관리하고 Weekly Board 캔버스에 표시.
+production에서 발견된 이슈를 GitHub Issues로 관리합니다. GitHub와 Slack Canvas 변경은 명시적으로 요청된 task에서만 수행합니다.
+
+이 문서는 상주 봇의 자동 라우팅이 아닙니다. Slack 메시지를 읽었다는 사실만으로 issue를 만들거나 Canvas를 수정하지 않습니다.
 
 ## When to Use
 
@@ -97,18 +99,16 @@ gh issue create \
 - [x] 등록
 - [ ] 해결
 
-> 이 이슈는 부톡봇에 의해 자동 생성되었습니다.
+> 이 이슈는 명시적으로 요청된 Codex task에서 생성되었습니다.
 ISSUE_EOF
 )"
 ```
 
 생성된 이슈 URL을 파싱하여 저장.
 
-**Step 4 — Weekly Board 캔버스 즉시 업데이트**
+**Step 4 — Weekly Board 확인**
 
-```bash
-node ~/.openclaw/workspace/scripts/weekly-board.mjs
-```
+이 repo에는 Weekly Board 자동 동기화 runtime이 없습니다. Canvas를 갱신해야 한다면 현재 channel/canvas ID를 Slack connector로 다시 확인하고, 사용자 요청 범위 안에서 별도 Slack Canvas 작업으로 수행합니다.
 
 **Step 5 — 확신도 판단 후 분기**
 
@@ -174,9 +174,8 @@ gh issue close {번호} --repo uitiorg/{찾은레포}
 ```
 
 캔버스 업데이트:
-```bash
-node ~/.openclaw/workspace/scripts/weekly-board.mjs
-```
+
+과거 OpenClaw workspace의 Weekly Board script 경로는 폐기되었습니다. 현재 Canvas 갱신이 필요하면 Slack connector/API의 live 대상 확인과 명시적 승인을 먼저 받습니다.
 
 콜백:
 ```

@@ -2,12 +2,14 @@
 name: bootalk_calendar
 description: 부톡 팀 구글 캘린더 일정 추가/조회 및 연차 등록. "일정 추가해줘", "연차 등록해줘", "반차야", "이번 달 연차 현황", "오늘 일정 뭐야" 등.
 metadata:
-  openclaw:
+  codex:
     requires:
       bins: [python3]
 ---
 
 # 부톡 팀 캘린더 관리
+
+> 이 문서는 Codex task 또는 운영자가 명시적으로 실행할 때 사용하는 지침입니다. 상주 Slack 봇이나 OpenClaw gateway가 자연어 메시지를 자동 실행한다고 가정하지 않습니다.
 
 ## 캘린더 구조 (반드시 숙지)
 
@@ -57,19 +59,36 @@ python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py add "배포일" 
 
 ### 연차 등록 → 부톡 연차 캘린더
 
+⚠️ **잔여 연차 필수 입력** — 모든 `leave` 호출에는 `--remaining "<문자열>"` 인자가 반드시 포함되어야 한다. 사용자가 잔여 연차를 명시하지 않았다면 등록을 보류하고 먼저 물어볼 것 (아래 [잔여 연차 확인 절차](#잔여-연차-확인-절차) 참조).
+
 ```bash
-# 종일 연차
-python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leave "이름" "YYYY-MM-DD"
+# 종일 연차 (잔여 연차 필수)
+python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leave "이름" "YYYY-MM-DD" --remaining "12일 (사용 후)"
 
 # 연속 연차 (N일)
-python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leave "이름" "YYYY-MM-DD" 3
+python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leave "이름" "YYYY-MM-DD" 3 --remaining "10일 (사용 후)"
 
 # 오전 반차 (09:30~13:30)
-python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leave "이름" "YYYY-MM-DD" --half-am
+python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leave "이름" "YYYY-MM-DD" --half-am --remaining "12.5일 (사용 후)"
 
 # 오후 반차 (13:30~18:30)
-python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leave "이름" "YYYY-MM-DD" --half-pm
+python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leave "이름" "YYYY-MM-DD" --half-pm --remaining "12.5일 (사용 후)"
 ```
+
+#### 잔여 연차 확인 절차
+
+사용자 발화에 잔여 연차가 명시되지 않은 경우:
+
+1. **등록을 즉시 실행하지 말 것.**
+2. 사용자에게 한국어로 다음 형식으로 되묻기:
+
+   > 신청 전에 잔여 연차를 알려주세요. (예: "이번 신청 사용 후 12일 남음" / "12.5일")
+   > HR 알림 메일에 함께 기록되어 본인이 직접 잔여 일수를 보고하는 형태가 됩니다.
+
+3. 사용자가 답변하면 `--remaining "<답변 그대로>"` 형태로 전달.
+4. 사용자가 모른다고 답할 경우: "잔여 연차는 #admin 의 전유진님께 확인 부탁드려요. 확인 후 다시 신청해주세요."로 안내하고 등록을 보류.
+
+잔여 연차 값은 자유 형식 문자열 — 사용자가 적은 그대로 메일 본문 마지막 라인 `잔여 연차: <값>` 으로 들어간다.
 
 ### 자동 이메일 알림
 
@@ -106,12 +125,13 @@ python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leaves
 ### 연차 등록
 | 요청 | 처리 |
 |------|------|
-| "나 X일 연차야" / "X일 연차 등록해줘" | `leave 이름 날짜` |
-| "X일 반차" (오전/오후 불명확) | 오전/오후 확인 후 등록 |
-| "오전 반차" | `leave 이름 날짜 --half-am` |
-| "오후 반차" | `leave 이름 날짜 --half-pm` |
-| "X일부터 Y일까지 연차" | 일수 계산 후 `leave 이름 시작일 N` |
-| "A 오후 반차, B 연차 등록해줘" | leave 두 번 순차 실행 |
+| "나 X일 연차야" / "X일 연차 등록해줘" | 잔여 연차 확인 → `leave 이름 날짜 --remaining "..."` |
+| "X일 반차" (오전/오후 불명확) | 오전/오후 + 잔여 연차 둘 다 확인 후 등록 |
+| "오전 반차" | 잔여 연차 확인 → `leave 이름 날짜 --half-am --remaining "..."` |
+| "오후 반차" | 잔여 연차 확인 → `leave 이름 날짜 --half-pm --remaining "..."` |
+| "X일부터 Y일까지 연차" | 일수 계산 + 잔여 연차 확인 → `leave 이름 시작일 N --remaining "..."` |
+| "A 오후 반차, B 연차 등록해줘" | 각 신청자의 잔여 연차 개별 확인 후 leave 두 번 순차 실행 |
+| 잔여 연차 미언급 | 등록 보류 + 사용자에게 잔여 일수 질문 |
 
 ### 연차 조회
 | 요청 | 처리 |
@@ -132,6 +152,8 @@ python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leaves
 | bje.uiti | 배지은 | U0APW6HMNR4 |
 | jji.bootalk | 정정일 | U0APRSH0SNP |
 | cyj.uiti | 전유진 | U0APGQN76CF |
+| ysg.uiti | 유상근 | U0B28B4CSRE |
+| agu.uiti | 안기웅 | U0B1SV1UQDP |
 
 날짜 미지정 시 반드시 확인 후 등록.
 제3자 연차 등록 시("배지은 연차 등록해줘") 이름을 그대로 사용.
@@ -157,16 +179,23 @@ python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leaves
 📧 이메일 발송 완료: holiday.uiti@gmail.com
 ```
 
-#### Slack 응답으로 변환할 때 — 다음 두 줄을 반드시 모두 포함:
+#### Slack 응답으로 변환할 때 — 다음 세 요소를 반드시 모두 포함:
+
+1. 등록 완료 라인 (캘린더 링크 포함)
+2. 📧 이메일 발송 완료 라인
+3. 잔여 연차 명시 라인 (사용자가 알린 그대로)
 
 ```
 ✅ [오전반차] 주우철 — 5월 13일 등록 완료 (<URL|캘린더>)
 📧 holiday.uiti@gmail.com 알림 완료
+🗓️ 잔여 연차: 12.5일 (사용 후) — HR 메일 본문에 함께 기록됨
 ```
 
-(첫 줄은 표현 자유. 둘째 줄 `📧 ...` 는 거의 그대로 유지.)
+(첫·둘째 줄은 표현 자유. 셋째 줄은 사용자가 답한 잔여 일수를 그대로 유지.)
 
-#### ❌ 잘못된 응답 (이메일 라인 누락)
+#### ❌ 잘못된 응답 패턴
+
+**(a) 이메일 라인 누락**
 
 ```
 5월 13일 주우철님의 오전 반차를 부톡 연차 캘린더에 등록했어요.
@@ -174,6 +203,16 @@ python3 /Users/juucheol/Bootalk/bootalk-openclaw/scripts/cal.py leaves
 ```
 
 위 응답은 등록만 보고하고 메일 발송 사실을 숨겼으므로 잘못됨. 신청자가 HR에 메일 도달 여부를 확인할 수 없게 됨.
+
+**(b) 잔여 연차 미확인 채로 등록 강행**
+
+```
+사용자: "내일 연차야"
+봇: ✅ [연차] 주우철 — 5월 5일 등록 완료
+    📧 holiday.uiti@gmail.com 알림 완료
+```
+
+위는 잔여 연차를 묻지 않고 등록함 — 정책 위반. 반드시 먼저 "잔여 연차 며칠인지 알려주세요"로 되묻고 답을 받은 후 `--remaining` 인자와 함께 등록해야 한다.
 
 #### 이메일 발송 실패 시
 

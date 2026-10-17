@@ -17,31 +17,28 @@ if not BOT_TOKEN:
 # Single source of truth. Update when canvases are added/removed.
 # ─────────────────────────────────────────────────────────────────────────────
 CANVAS_REGISTRY = [
-    # ── 기존 핵심 참조 캔버스 (10개) ──────────────────────────────────────────
-    ("C0APW641YA2", "F0APZ1GRWMR", "온보딩 가이드"),       # 부톡-온보딩
-    ("C0APYE86NAW", "F0AQZM486L8", "공지사항 필수 정보"),   # 공지사항
-    ("C0AQSN8AEGY", "F0AQJA5C0SD", "업무 규칙"),           # 업무규칙
-    ("C0AQ226BMSQ", "F0AQ91JMF2Q", "중개사 운영 가이드"),   # brokerage
-    ("C0APYE7MLEN", "F0APQ0CF81M", "개발팀 핵심 참조"),     # dev
-    ("C0APYE7MLEN", "F0AQZMPL5TJ", "앱 테스트"),           # dev
-    ("C0AQSN880NL", "F0AQZMF3VJ4", "핵심 가치"),           # 회사내규
-    ("C0APV20P03X", "F0AR0A45X8Q", "단지 링크 공유"),       # marketing
-    ("C0APYE7MLEN", "F0AR0A3PBPA", "JIRA"),                # dev
-    ("C0AQSN4B680", "F0AQ9KJ64CU", "중임 신청"),           # admin
-    # ── WORKS 아카이브 → 캔버스 마이그레이션 (13개) ──────────────────────────
-    ("C0APYE86NAW", "F0AQKBL08HF", "네이버"),              # 공지사항 - 부톡 사이트 바로가기
-    ("C0AQSN8AEGY", "F0AQ03EUW83", "할 일"),               # 업무규칙 - To Do 사용법
-    ("C0AQ226BMSQ", "F0AQKBR6R7T", "중개수수료"),           # brokerage - 중개수수료 규정
-    ("C0AQ226BMSQ", "F0AQA3GLZU4", "중개사 계정 등록"),     # brokerage - 계정 등록 프로세스
-    ("C0APYE7MLEN", "F0AQ33A5YKX", "매물 추이"),            # dev - 매물 추이 알고리즘
-    ("C0APYE7MLEN", "F0AQA3GTM0C", "직거래"),              # dev - 직거래 편향 아이디어
-    ("C0APYE7MLEN", "F0AQ33D97N1", "아파트 추가"),          # dev - 신축/100세대 미만 업데이트
-    ("C0APYE7MLEN", "F0APR26FUB1", "TTA"),                 # dev - TTA 성능시험성적서
-    ("C0APV20P03X", "F0AQ33EGA2H", "네이버 성과형"),        # marketing - 광고 숙지사항
-    ("C0APV20P03X", "F0AQKCL5RDX", "수도권 아파트"),        # marketing - 시장규모 재산출
-    ("C0APV20P03X", "F0AR0PP8NHE", "부동산 인접"),          # marketing - 인접 서비스 시장 규모
-    ("C0APV20P03X", "F0AQKCN9WE5", "마케팅/영업 참조"),     # marketing - 참조 자료 (구글 애즈 포함)
-    ("C0AQSN4B680", "F0AQKCR4SHF", "어드민 참조"),          # admin - 참조 자료
+    # ── 부톡-온보딩 채널 ─────────────────────────────────────────────────────
+    ("C0APW641YA2", "F0APZ1GRWMR", "온보딩 가이드"),
+    ("C0APW641YA2", "F0B18K9JQKV", "업무 규칙"),
+    ("C0APW641YA2", "F0B299C95CY", "핵심 가치"),
+    ("C0APW641YA2", "F0B1TTAPWC9", "연차 규정"),
+    # ── 전체메세지 채널 (구 #공지사항) ───────────────────────────────────────
+    ("C0B1T0GSP89", "F0B1TTD3VSM", "공지사항 필수 정보"),
+    ("C0B1T0GSP89", "F0B1TT7GUU9", "네이버에서"),
+    # ── bootalk-products 채널 (구 #dev) ─────────────────────────────────────
+    ("C0APYE7MLEN", "F0APQ0CF81M", "개발팀 핵심 참조"),
+    ("C0APYE7MLEN", "F0AQZMPL5TJ", "앱 테스트"),
+    ("C0APYE7MLEN", "F0B1JAAL1KN", "개발팀 TODO"),
+    # ── dev-private 채널 (구 #sentry-alerts) ────────────────────────────────
+    ("C0APWC6KXQE", "F0B1889URS7", "개발서버"),
+    # ── 중개팀 채널 (구 #brokerage) ─────────────────────────────────────────
+    ("C0AQ226BMSQ", "F0AQ91JMF2Q", "중개사 운영 가이드"),
+    # ── mktg-sales 채널 (구 #marketing) ─────────────────────────────────────
+    ("C0APV20P03X", "F0AR0A45X8Q", "단지 링크 공유"),
+    ("C0APV20P03X", "F0AQKCN9WE5", "마케팅/영업 참조"),
+    # ── admin 채널 ──────────────────────────────────────────────────────────
+    ("C0AQSN4B680", "F0AQ9KJ64CU", "중임 신청"),
+    ("C0AQSN4B680", "F0AQKCR4SHF", "어드민 참조"),
 ]
 
 
